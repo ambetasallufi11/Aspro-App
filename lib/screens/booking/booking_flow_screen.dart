@@ -23,7 +23,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     final user = ref.watch(userProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Book Pickup')),
+      appBar: AppBar(
+        title: const Text('Book Pickup'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+      ),
       body: Stepper(
         type: StepperType.vertical,
         currentStep: _currentStep,

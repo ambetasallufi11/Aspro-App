@@ -14,7 +14,13 @@ class ProfileScreen extends ConsumerWidget {
     final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [

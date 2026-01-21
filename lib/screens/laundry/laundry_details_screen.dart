@@ -22,6 +22,10 @@ class LaundryDetailsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Laundry Details'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),
