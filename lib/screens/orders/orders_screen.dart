@@ -13,7 +13,13 @@ class OrdersScreen extends ConsumerWidget {
     final orders = ref.watch(ordersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Orders')),
+      appBar: AppBar(
+        title: const Text('My Orders'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+      ),
       body: ListView.separated(
         padding: const EdgeInsets.all(20),
         itemCount: orders.length,

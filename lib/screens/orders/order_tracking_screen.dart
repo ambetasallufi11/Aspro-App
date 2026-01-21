@@ -20,7 +20,13 @@ class OrderTrackingScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Order Tracking')),
+      appBar: AppBar(
+        title: const Text('Order Tracking'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
