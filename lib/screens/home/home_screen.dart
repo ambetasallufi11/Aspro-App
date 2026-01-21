@@ -63,12 +63,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withOpacity(0.1),
                             blurRadius: 8,
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.person_pin_circle,
+                      child: Icon(Icons.person_pin_circle,
                           color: Colors.white),
                     ),
                   ),
@@ -84,7 +84,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             color: Theme.of(context).colorScheme.secondary,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.local_laundry_service,
+                          child: Icon(Icons.local_laundry_service,
                               color: Colors.white),
                         ),
                       ),
@@ -107,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
+                      color: Colors.black.withOpacity(0.05),
                       blurRadius: 12,
                       offset: const Offset(0, -4),
                     ),
@@ -122,7 +122,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),

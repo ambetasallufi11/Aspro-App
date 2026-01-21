@@ -1,47 +1,82 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const _seedBlue = Color(0xFF1F6FEB);
+  // Primary colors
+  static const _accentBlue = Color(0xFF87CEFA); // Light sky blue for accents and highlights
   static const _seedGreen = Color(0xFF22C55E);
+  
+  // Text colors
+  static const _textPrimary = Colors.black;
+  static const _textSecondary = Color(0xFF505050);
+  static const _textTertiary = Color(0xFF757575);
 
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: _seedBlue,
+      seedColor: _accentBlue,
       brightness: Brightness.light,
-    ).copyWith(secondary: _seedGreen);
+      primary: _accentBlue,
+      onPrimary: Colors.white,
+      secondary: _seedGreen,
+      surface: Colors.white,
+      background: Colors.white,
+      onBackground: _textPrimary,
+      onSurface: _textPrimary,
+    );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: const Color(0xFFF6F8FB),
+      scaffoldBackgroundColor: Colors.white,
       cardTheme: CardThemeData(
         color: Colors.white,
-        elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.08),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 1,
+        shadowColor: Colors.black.withOpacity(0.05),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: _accentBlue.withOpacity(0.1), width: 1),
+        ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 18,
-          color: colorScheme.onSurface,
+          color: _textPrimary,
         ),
+        iconTheme: IconThemeData(color: _textPrimary),
+      ),
+      textTheme: TextTheme(
+        headlineLarge: TextStyle(color: _textPrimary, fontWeight: FontWeight.bold),
+        headlineMedium: TextStyle(color: _textPrimary, fontWeight: FontWeight.bold),
+        headlineSmall: TextStyle(color: _textPrimary, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(color: _textPrimary, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(color: _textPrimary, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(color: _textPrimary),
+        bodyMedium: TextStyle(color: _textSecondary),
+        bodySmall: TextStyle(color: _textTertiary),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFFF0F3F8),
+        fillColor: Colors.grey.shade50,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: _accentBlue.withOpacity(0.2)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _accentBlue.withOpacity(0.2)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _accentBlue),
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: const Color(0xFFE8F1FF),
-        selectedColor: const Color(0xFF1F6FEB),
-        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        backgroundColor: _accentBlue.withOpacity(0.1),
+        selectedColor: _accentBlue,
+        labelStyle: TextStyle(fontWeight: FontWeight.w600, color: _textPrimary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
@@ -53,44 +88,75 @@ class AppTheme {
     );
   }
 
+  // We'll keep the dark theme definition but make it similar to light theme
+  // with slightly darker backgrounds to maintain the clean look
   static ThemeData get darkTheme {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: _seedBlue,
-      brightness: Brightness.dark,
-    ).copyWith(secondary: _seedGreen);
+      seedColor: _accentBlue,
+      brightness: Brightness.light, // Using light brightness for cleaner look
+      primary: _accentBlue,
+      onPrimary: Colors.white,
+      secondary: _seedGreen,
+      surface: Colors.white,
+      background: Colors.white,
+      onBackground: _textPrimary,
+      onSurface: _textPrimary,
+    );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: const Color(0xFF0F141A),
+      scaffoldBackgroundColor: Colors.white,
       cardTheme: CardThemeData(
-        color: const Color(0xFF141B23),
+        color: Colors.white,
         elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shadowColor: Colors.black.withOpacity(0.05),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: _accentBlue.withOpacity(0.1), width: 1),
+        ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 18,
-          color: colorScheme.onSurface,
+          color: _textPrimary,
         ),
+        iconTheme: IconThemeData(color: _textPrimary),
+      ),
+      textTheme: TextTheme(
+        headlineLarge: TextStyle(color: _textPrimary, fontWeight: FontWeight.bold),
+        headlineMedium: TextStyle(color: _textPrimary, fontWeight: FontWeight.bold),
+        headlineSmall: TextStyle(color: _textPrimary, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(color: _textPrimary, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(color: _textPrimary, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(color: _textPrimary),
+        bodyMedium: TextStyle(color: _textSecondary),
+        bodySmall: TextStyle(color: _textTertiary),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1C2430),
+        fillColor: Colors.grey.shade50,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: _accentBlue.withOpacity(0.2)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _accentBlue.withOpacity(0.2)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _accentBlue),
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: const Color(0xFF1F2A3A),
-        selectedColor: const Color(0xFF1F6FEB),
-        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        backgroundColor: _accentBlue.withOpacity(0.1),
+        selectedColor: _accentBlue,
+        labelStyle: TextStyle(fontWeight: FontWeight.w600, color: _textPrimary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       pageTransitionsTheme: const PageTransitionsTheme(

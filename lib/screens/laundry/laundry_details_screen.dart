@@ -29,19 +29,18 @@ class LaundryDetailsScreen extends ConsumerWidget {
           Container(
             height: 180,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                  Theme.of(context).colorScheme.secondary.withOpacity(0.8),
-                ],
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                width: 1,
               ),
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Center(
+            child: Center(
               child: Icon(
                 Icons.local_laundry_service,
                 size: 64,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -55,7 +54,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.star, color: Colors.amber, size: 18),
+              Icon(Icons.star, color: Theme.of(context).colorScheme.primary, size: 18),
               const SizedBox(width: 4),
               Text('${laundry.rating} • ${laundry.distanceKm} km'),
               const SizedBox(width: 12),
@@ -96,7 +95,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              const Icon(Icons.timer_outlined, size: 18),
+              Icon(Icons.timer_outlined, color: Theme.of(context).colorScheme.primary, size: 18),
               const SizedBox(width: 6),
               Text('Estimated delivery: ${laundry.eta}'),
             ],

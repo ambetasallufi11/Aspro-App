@@ -25,7 +25,7 @@ class PrimaryButton extends StatelessWidget {
           )
         : FilledButton.styleFrom(
             backgroundColor: colorScheme.primary,
-            foregroundColor: Colors.white,
+            foregroundColor: Colors.white, // White text on blue button for contrast
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             padding: const EdgeInsets.symmetric(vertical: 14),
