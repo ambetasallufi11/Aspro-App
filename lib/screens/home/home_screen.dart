@@ -16,7 +16,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final MapController _mapController = MapController();
-  final LatLng _userLocation = const LatLng(37.7749, -122.4194);
+  // Tirana, Albania
+  final LatLng _userLocation = const LatLng(41.3275, 19.8187);
 
   @override
   Widget build(BuildContext context) {

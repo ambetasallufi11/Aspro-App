@@ -68,7 +68,7 @@ class OrderTrackingScreen extends ConsumerWidget {
               height: 200,
               child: FlutterMap(
                 options: MapOptions(
-                  initialCenter: const LatLng(37.7749, -122.4194),
+                  initialCenter: const LatLng(41.3275, 19.8187),
                   initialZoom: 12,
                   interactionOptions:
                       const InteractionOptions(flags: InteractiveFlag.none),
@@ -82,7 +82,7 @@ class OrderTrackingScreen extends ConsumerWidget {
                   MarkerLayer(
                     markers: [
                       Marker(
-                        point: const LatLng(37.7749, -122.4194),
+                        point: const LatLng(41.3275, 19.8187),
                         width: 36,
                         height: 36,
                         child: Container(
