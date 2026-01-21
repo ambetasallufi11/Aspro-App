@@ -2,188 +2,270 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/mock_providers.dart';
+import '../../widgets/booking_step_indicator.dart';
+import '../../widgets/service_card.dart';
+import '../../widgets/time_slot_selector.dart';
+import '../../widgets/address_selector.dart';
+import '../../widgets/order_summary.dart';
+import '../../widgets/enhanced_button.dart';
+import '../../models/service.dart';
 
 class BookingFlowScreen extends ConsumerStatefulWidget {
-  const BookingFlowScreen({super.key});
+    const BookingFlowScreen({super.key});
 
-  @override
-  ConsumerState<BookingFlowScreen> createState() => _BookingFlowScreenState();
+    @override
+    ConsumerState<BookingFlowScreen> createState() => _BookingFlowScreenState();
 }
 
 class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
-  int _currentStep = 0;
-  final Set<String> _selectedServices = {'Wash & Fold'};
-  String _pickupSlot = 'Today • 6:00 - 7:00 PM';
-  String _deliverySlot = 'Tomorrow • 6:00 - 8:00 PM';
-  String _address = '128 Market Street, San Francisco, CA';
-
-  @override
-  Widget build(BuildContext context) {
-    final services = ref.watch(servicesProvider);
-    final user = ref.watch(userProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Book Pickup'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).maybePop(),
+    int _currentStep = 0;
+    final Set<String> _selectedServices = {'Wash & Fold'};
+    String _pickupSlotId = 'pickup_today';
+    String _deliverySlotId = 'delivery_tomorrow';
+    String _address = '128 Market Street, San Francisco, CA';
+    
+    final List<String> _steps = [
+        'Services',
+        'Pickup',
+        'Delivery',
+        'Address',
+        'Summary',
+    ];
+    
+    final List<TimeSlot> _pickupSlots = [
+        TimeSlot(
+            id: 'pickup_today',
+            displayText: 'Today • 6:00 - 7:00 PM',
+            day: 'Today',
+            timeRange: '6:00 - 7:00 PM',
         ),
-      ),
-      body: Stepper(
-        type: StepperType.vertical,
-        currentStep: _currentStep,
-        onStepContinue: () {
-          if (_currentStep < 4) {
+        TimeSlot(
+            id: 'pickup_tomorrow',
+            displayText: 'Tomorrow • 8:00 - 10:00 AM',
+            day: 'Tomorrow',
+            timeRange: '8:00 - 10:00 AM',
+        ),
+    ];
+    
+    final List<TimeSlot> _deliverySlots = [
+        TimeSlot(
+            id: 'delivery_tomorrow',
+            displayText: 'Tomorrow • 6:00 - 8:00 PM',
+            day: 'Tomorrow',
+            timeRange: '6:00 - 8:00 PM',
+        ),
+        TimeSlot(
+            id: 'delivery_friday',
+            displayText: 'Fri • 6:00 - 8:00 PM',
+            day: 'Friday',
+            timeRange: '6:00 - 8:00 PM',
+        ),
+    ];
+    
+    String get _pickupSlotText => _pickupSlots
+        .firstWhere((slot) => slot.id == _pickupSlotId)
+        .displayText;
+        
+    String get _deliverySlotText => _deliverySlots
+        .firstWhere((slot) => slot.id == _deliverySlotId)
+        .displayText;
+
+    void _nextStep() {
+        if (_currentStep < 4) {
             setState(() => _currentStep += 1);
-          }
-        },
-        onStepCancel: () {
-          if (_currentStep > 0) {
+        }
+    }
+
+    void _previousStep() {
+        if (_currentStep > 0) {
             setState(() => _currentStep -= 1);
-          }
-        },
-        controlsBuilder: (context, details) {
-          final isLast = _currentStep == 4;
-          return Row(
+        }
+    }
+
+    @override
+    Widget build(BuildContext context) {
+        final services = ref.watch(servicesProvider);
+        final user = ref.watch(userProvider);
+        final primaryColor = const Color(0xFF2196F3); // Material Blue 500
+
+        return Scaffold(
+            appBar: AppBar(
+                title: const Text('Book Pickup'),
+                leading: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).maybePop(),
+                ),
+                elevation: 0,
+                backgroundColor: Colors.white,
+            ),
+            body: Column(
+                children: [
+                    // Custom step indicator
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: BookingStepIndicator(
+                            currentStep: _currentStep,
+                            steps: _steps,
+                        ),
+                    ),
+                    
+                    // Main content area
+                    Expanded(
+                        child: SingleChildScrollView(
+                            padding: const EdgeInsets.all(16),
+                            child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: _buildCurrentStepContent(services),
+                            ),
+                        ),
+                    ),
+                    
+                    // Bottom navigation buttons
+                    Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, -5),
+                                ),
+                            ],
+                        ),
+                        child: Row(
+                            children: [
+                                if (_currentStep > 0)
+                                    Expanded(
+                                        flex: 1,
+                                        child: EnhancedButton(
+                                            label: 'Back',
+                                            onPressed: _previousStep,
+                                            isOutlined: true,
+                                            icon: Icons.arrow_back,
+                                        ),
+                                    ),
+                                
+                                if (_currentStep > 0)
+                                    const SizedBox(width: 12),
+                                
+                                Expanded(
+                                    flex: 2,
+                                    child: EnhancedButton(
+                                        label: _currentStep == 4 ? 'Confirm Booking' : 'Continue',
+                                        onPressed: _currentStep == 4 ? () {} : _nextStep,
+                                        icon: _currentStep == 4 ? Icons.check_circle : Icons.arrow_forward,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                ],
+            ),
+        );
+    }
+    
+    Widget _buildCurrentStepContent(List<Service> services) {
+        switch (_currentStep) {
+            case 0:
+                return _buildServicesStep(services);
+            case 1:
+                return _buildPickupTimeStep();
+            case 2:
+                return _buildDeliveryTimeStep();
+            case 3:
+                return _buildAddressStep();
+            case 4:
+                return _buildSummaryStep(services);
+            default:
+                return const SizedBox.shrink();
+        }
+    }
+    
+    Widget _buildServicesStep(List<Service> services) {
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FilledButton(
-                onPressed: details.onStepContinue,
-                child: Text(isLast ? 'Confirm Booking' : 'Continue'),
-              ),
-              const SizedBox(width: 12),
-              if (_currentStep > 0)
-                TextButton(
-                  onPressed: details.onStepCancel,
-                  child: const Text('Back'),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                        'Select Services',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                        ),
+                    ),
                 ),
+                
+                Text(
+                    'Choose the services you need for your laundry',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey.shade700,
+                    ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                ...services.map((service) {
+                    final isSelected = _selectedServices.contains(service.name);
+                    return ServiceCard(
+                        service: service,
+                        isSelected: isSelected,
+                        onTap: () {
+                            setState(() {
+                                if (isSelected) {
+                                    _selectedServices.remove(service.name);
+                                } else {
+                                    _selectedServices.add(service.name);
+                                }
+                            });
+                        },
+                    );
+                }).toList(),
             ],
-          );
-        },
-        steps: [
-          Step(
-            title: const Text('Select services'),
-            isActive: _currentStep >= 0,
-            content: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: services.map((service) {
-                final isSelected = _selectedServices.contains(service.name);
-                return FilterChip(
-                  label: Text(service.name),
-                  selected: isSelected,
-                  onSelected: (value) {
-                    setState(() {
-                      if (value) {
-                        _selectedServices.add(service.name);
-                      } else {
-                        _selectedServices.remove(service.name);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-          Step(
-            title: const Text('Pickup time'),
-            isActive: _currentStep >= 1,
-            content: Column(
-              children: [
-                RadioListTile(
-                  value: 'Today • 6:00 - 7:00 PM',
-                  groupValue: _pickupSlot,
-                  onChanged: (value) {
-                    setState(() => _pickupSlot = value as String);
-                  },
-                  title: const Text('Today • 6:00 - 7:00 PM'),
-                ),
-                RadioListTile(
-                  value: 'Tomorrow • 8:00 - 10:00 AM',
-                  groupValue: _pickupSlot,
-                  onChanged: (value) {
-                    setState(() => _pickupSlot = value as String);
-                  },
-                  title: const Text('Tomorrow • 8:00 - 10:00 AM'),
-                ),
-              ],
-            ),
-          ),
-          Step(
-            title: const Text('Delivery time'),
-            isActive: _currentStep >= 2,
-            content: Column(
-              children: [
-                RadioListTile(
-                  value: 'Tomorrow • 6:00 - 8:00 PM',
-                  groupValue: _deliverySlot,
-                  onChanged: (value) {
-                    setState(() => _deliverySlot = value as String);
-                  },
-                  title: const Text('Tomorrow • 6:00 - 8:00 PM'),
-                ),
-                RadioListTile(
-                  value: 'Fri • 6:00 - 8:00 PM',
-                  groupValue: _deliverySlot,
-                  onChanged: (value) {
-                    setState(() => _deliverySlot = value as String);
-                  },
-                  title: const Text('Fri • 6:00 - 8:00 PM'),
-                ),
-              ],
-            ),
-          ),
-          Step(
-            title: const Text('Confirm address'),
-            isActive: _currentStep >= 3,
-            content: DropdownButtonFormField<String>(
-              value: _address,
-              decoration: const InputDecoration(labelText: 'Pickup address'),
-              items: user.addresses
-                  .map((address) => DropdownMenuItem(
-                        value: address,
-                        child: Text(address),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _address = value);
-                }
-              },
-            ),
-          ),
-          Step(
-            title: const Text('Order summary'),
-            isActive: _currentStep >= 4,
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Selected services',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                ..._selectedServices
-                    .map((service) => Text('• $service'))
-                    .toList(),
-                const SizedBox(height: 12),
-                Text('Pickup: $_pickupSlot'),
-                Text('Delivery: $_deliverySlot'),
-                const SizedBox(height: 12),
-                Text('Address: $_address'),
-                const SizedBox(height: 12),
-                Text(
-                  'Total: \$48',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        );
+    }
+    
+    Widget _buildPickupTimeStep() {
+        return TimeSlotSelector(
+            title: 'Select Pickup Time',
+            timeSlots: _pickupSlots,
+            selectedSlotId: _pickupSlotId,
+            onSlotSelected: (id) {
+                setState(() => _pickupSlotId = id);
+            },
+        );
+    }
+    
+    Widget _buildDeliveryTimeStep() {
+        return TimeSlotSelector(
+            title: 'Select Delivery Time',
+            timeSlots: _deliverySlots,
+            selectedSlotId: _deliverySlotId,
+            onSlotSelected: (id) {
+                setState(() => _deliverySlotId = id);
+            },
+        );
+    }
+    
+    Widget _buildAddressStep() {
+        final user = ref.watch(userProvider);
+        
+        return AddressSelector(
+            addresses: user.addresses,
+            selectedAddress: _address,
+            onAddressSelected: (address) {
+                setState(() => _address = address);
+            },
+        );
+    }
+    
+    Widget _buildSummaryStep(List<Service> services) {
+        return OrderSummary(
+            selectedServices: _selectedServices,
+            allServices: services,
+            pickupSlot: _pickupSlotText,
+            deliverySlot: _deliverySlotText,
+            address: _address,
+        );
+    }
 }
