@@ -29,6 +29,20 @@ class LaundryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (laundry.imageUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: SizedBox(
+                  height: 120,
+                  width: double.infinity,
+                  child: Image.asset(
+                    laundry.imageUrl!,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            if (laundry.imageUrl != null)
+              const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
