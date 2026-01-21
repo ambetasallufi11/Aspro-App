@@ -18,8 +18,8 @@ class MockData {
     Laundry(
       id: 'l1',
       name: 'FreshFold Laundry Co.',
-      latitude: 37.7765,
-      longitude: -122.4172,
+      latitude: 41.3297,
+      longitude: 19.8186,
       rating: 4.8,
       priceRange: '\$\$',
       distanceKm: 0.8,
@@ -29,8 +29,8 @@ class MockData {
     Laundry(
       id: 'l2',
       name: 'Sunrise Suds',
-      latitude: 37.7719,
-      longitude: -122.4231,
+      latitude: 41.3239,
+      longitude: 19.8128,
       rating: 4.6,
       priceRange: '\$\$',
       distanceKm: 1.2,
@@ -40,8 +40,8 @@ class MockData {
     Laundry(
       id: 'l3',
       name: 'CloudClean Express',
-      latitude: 37.7831,
-      longitude: -122.4091,
+      latitude: 41.3346,
+      longitude: 19.8264,
       rating: 4.9,
       priceRange: '\$\$\$',
       distanceKm: 2.1,
