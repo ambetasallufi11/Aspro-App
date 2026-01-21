@@ -30,22 +30,30 @@ class LaundryDetailsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                width: 1,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  width: 1,
+                ),
               ),
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Center(
-              child: Icon(
-                Icons.local_laundry_service,
-                size: 64,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              child: laundry.imageUrl != null
+                ? Image.asset(
+                    laundry.imageUrl!,
+                    fit: BoxFit.cover,
+                  )
+                : Center(
+                    child: Icon(
+                      Icons.local_laundry_service,
+                      size: 64,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
             ),
           ),
           const SizedBox(height: 20),

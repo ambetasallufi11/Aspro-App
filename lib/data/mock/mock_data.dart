@@ -25,6 +25,7 @@ class MockData {
       distanceKm: 0.8,
       services: ['Wash & Fold', 'Dry Clean', 'Express'],
       eta: 'Same day',
+      imageUrl: 'assets/Merchant1.png',
     ),
     Laundry(
       id: 'l2',
@@ -36,6 +37,7 @@ class MockData {
       distanceKm: 1.2,
       services: ['Wash & Fold', 'Eco Wash'],
       eta: '24 hrs',
+      imageUrl: 'assets/Merchant2.png',
     ),
     Laundry(
       id: 'l3',
@@ -47,6 +49,7 @@ class MockData {
       distanceKm: 2.1,
       services: ['Dry Clean', 'Steam Press', 'Premium Care'],
       eta: '8 hrs',
+      imageUrl: 'assets/Merchant3.png',
     ),
   ];
 

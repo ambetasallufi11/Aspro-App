@@ -8,6 +8,7 @@ class Laundry {
   final double distanceKm;
   final List<String> services;
   final String eta;
+  final String? imageUrl;
 
   const Laundry({
     required this.id,
@@ -19,5 +20,6 @@ class Laundry {
     required this.distanceKm,
     required this.services,
     required this.eta,
+    this.imageUrl,
   });
 }
