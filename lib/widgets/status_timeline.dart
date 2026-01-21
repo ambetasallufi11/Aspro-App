@@ -46,7 +46,7 @@ class StatusTimeline extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isActive
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.grey.shade400,
+                        : Colors.grey.shade300,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -56,7 +56,7 @@ class StatusTimeline extends StatelessWidget {
                     height: 32,
                     color: isActive
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.grey.shade300,
+                        : Colors.grey.shade200,
                   ),
               ],
             ),

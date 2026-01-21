@@ -20,7 +20,7 @@ class LaundryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Theme.of(context).cardTheme.shadowColor ?? const Color(0xFFAED9E0).withOpacity(0.2),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -48,7 +48,7 @@ class LaundryCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.star, size: 14, color: Colors.white),
+                      Icon(Icons.star, size: 14, color: Colors.white),
                       const SizedBox(width: 4),
                       Text(
                         laundry.rating.toStringAsFixed(1),
@@ -67,8 +67,7 @@ class LaundryCard extends StatelessWidget {
               '${laundry.distanceKm.toStringAsFixed(1)} km • ${laundry.priceRange}',
               style: Theme.of(context)
                   .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Colors.grey.shade600),
+                  .bodyMedium,
             ),
             const SizedBox(height: 12),
             Wrap(

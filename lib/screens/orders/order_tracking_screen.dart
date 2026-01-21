@@ -33,8 +33,19 @@ class OrderTrackingScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardTheme.color,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,6 +100,12 @@ class OrderTrackingScreen extends ConsumerWidget {
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.primary,
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                              ),
+                            ],
                           ),
                           child: const Icon(Icons.directions_bike,
                               color: Colors.white),
@@ -106,11 +123,16 @@ class OrderTrackingScreen extends ConsumerWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                width: 1,
+              ),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.notifications_active_outlined),
-                SizedBox(width: 8),
+                Icon(Icons.notifications_active_outlined, 
+                    color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                       'Driver is on the way. You will receive updates automatically.'),
