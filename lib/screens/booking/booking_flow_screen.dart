@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/mock/mock_data.dart';
 import '../../providers/mock_providers.dart';
 
 class BookingFlowScreen extends ConsumerStatefulWidget {
@@ -20,7 +21,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   @override
   Widget build(BuildContext context) {
     final services = ref.watch(servicesProvider);
-    final user = ref.watch(userProvider);
+    final authState = ref.watch(authProvider);
+    final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
 
     return Scaffold(
       appBar: AppBar(
@@ -139,7 +141,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             content: DropdownButtonFormField<String>(
               value: _address,
               decoration: const InputDecoration(labelText: 'Pickup address'),
-              items: user.addresses
+              items: addresses
                   .map((address) => DropdownMenuItem(
                         value: address,
                         child: Text(address),

@@ -1,10 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../providers/mock_providers.dart';
 import '../../widgets/primary_button.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
+
+  @override
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  void _handleRegister() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim().toLowerCase();
+    final password = _passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      _showMessage('Please fill out all fields.');
+      return;
+    }
+
+    final created = ref.read(authProvider.notifier).registerUser(
+          name: name,
+          email: email,
+          password: password,
+        );
+
+    if (created) {
+      _showMessage('Account created. You are now signed in.');
+      context.go('/home');
+    } else {
+      _showMessage('Email already exists. Please sign in.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +86,7 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               TextField(
+                controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Full name',
                   prefixIcon: Icon(Icons.person_outline),
@@ -44,6 +94,7 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               TextField(
+                controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   prefixIcon: Icon(Icons.email_outlined),
@@ -51,6 +102,7 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               TextField(
+                controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
@@ -60,7 +112,7 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 24),
               PrimaryButton(
                 label: 'Create account',
-                onPressed: () => context.go('/home'),
+                onPressed: _handleRegister,
               ),
               const Spacer(),
               Row(
