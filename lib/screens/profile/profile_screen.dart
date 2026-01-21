@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../providers/mock_providers.dart';
 import '../../providers/theme_provider.dart';
@@ -9,7 +10,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final authState = ref.watch(authProvider);
+    final user = authState.currentUser;
     final themeMode = ref.watch(themeModeProvider);
     final isDark = themeMode == ThemeMode.dark;
 
@@ -38,14 +40,14 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.name,
+                    user?.name ?? 'Guest',
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  Text(user.email),
-                  Text(user.phone),
+                  Text(user?.email ?? 'Not signed in'),
+                  Text(user?.phone ?? ''),
                 ],
               ),
             ],
@@ -59,7 +61,7 @@ class ProfileScreen extends ConsumerWidget {
                 ?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
-          ...user.addresses.map(
+          ...((user?.addresses ?? const <String>[]).map(
             (address) => Card(
               child: ListTile(
                 leading: const Icon(Icons.place_outlined),
@@ -67,7 +69,7 @@ class ProfileScreen extends ConsumerWidget {
                 trailing: const Icon(Icons.chevron_right),
               ),
             ),
-          ),
+          )),
           const SizedBox(height: 24),
           Text(
             'Preferences',
@@ -104,8 +106,38 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
+          if (user != null) ...[
+            Text(
+              'Credentials',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.mail_outline),
+                title: const Text('Email'),
+                subtitle: Text(user.email),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.lock_outline),
+                title: const Text('Password'),
+                subtitle: Text(user.password),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: user == null
+                ? null
+                : () {
+                    ref.read(authProvider.notifier).logout();
+                    context.go('/auth/login');
+                  },
             icon: const Icon(Icons.logout),
             label: const Text('Logout'),
           ),

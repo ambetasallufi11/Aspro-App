@@ -14,6 +14,29 @@ class MockData {
     ],
   );
 
+  static final allowedUsers = <MockUserCredentials>[
+    MockUserCredentials(
+      name: 'Ambeta Sallufi',
+      email: 'ambeta@aspro.app',
+      password: 'ambeta123',
+      phone: '+355 69 123 4567',
+      addresses: [
+        'Rruga e Kavajës, Tirana',
+        'Rruga Myslym Shyri, Tirana',
+      ],
+    ),
+    MockUserCredentials(
+      name: 'Alkida Isaku',
+      email: 'alkida@aspro.app',
+      password: 'alkida123',
+      phone: '+355 68 555 2211',
+      addresses: [
+        'Bulevardi Zogu I, Tirana',
+        'Rruga Dëshmorët e 4 Shkurtit, Tirana',
+      ],
+    ),
+  ];
+
   static const laundries = [
     Laundry(
       id: 'l1',
@@ -25,6 +48,7 @@ class MockData {
       distanceKm: 0.8,
       services: ['Wash & Fold', 'Dry Clean', 'Express'],
       eta: 'Same day',
+      imageUrl: 'assets/Merchant1.png',
     ),
     Laundry(
       id: 'l2',
@@ -36,6 +60,7 @@ class MockData {
       distanceKm: 1.2,
       services: ['Wash & Fold', 'Eco Wash'],
       eta: '24 hrs',
+      imageUrl: 'assets/Merchant2.png',
     ),
     Laundry(
       id: 'l3',
@@ -47,6 +72,7 @@ class MockData {
       distanceKm: 2.1,
       services: ['Dry Clean', 'Steam Press', 'Premium Care'],
       eta: '8 hrs',
+      imageUrl: 'assets/Merchant3.png',
     ),
   ];
 
@@ -100,4 +126,20 @@ class MockData {
       createdAt: DateTime.now().subtract(const Duration(days: 2)),
     ),
   ];
+}
+
+class MockUserCredentials {
+  final String name;
+  final String email;
+  final String password;
+  final String phone;
+  final List<String> addresses;
+
+  const MockUserCredentials({
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.phone,
+    required this.addresses,
+  });
 }

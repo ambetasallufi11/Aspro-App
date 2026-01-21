@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/mock/mock_data.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/booking_step_indicator.dart';
 import '../../widgets/service_card.dart';
@@ -85,8 +86,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     @override
     Widget build(BuildContext context) {
         final services = ref.watch(servicesProvider);
-        final user = ref.watch(userProvider);
+        final authState = ref.watch(authProvider);
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
+    final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
 
         return Scaffold(
             appBar: AppBar(
