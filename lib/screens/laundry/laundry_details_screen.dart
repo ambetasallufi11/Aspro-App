@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../providers/mock_providers.dart';
+import '../../widgets/primary_button.dart';
+
+class LaundryDetailsScreen extends ConsumerWidget {
+  final String? laundryId;
+
+  const LaundryDetailsScreen({super.key, required this.laundryId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final laundries = ref.watch(laundriesProvider);
+    final services = ref.watch(servicesProvider);
+    final laundry = laundries.firstWhere(
+      (item) => item.id == laundryId,
+      orElse: () => laundries.first,
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Laundry Details'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Container(
+            height: 180,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  Theme.of(context).colorScheme.secondary.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.local_laundry_service,
+                size: 64,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            laundry.name,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.star, color: Colors.amber, size: 18),
+              const SizedBox(width: 4),
+              Text('${laundry.rating} • ${laundry.distanceKm} km'),
+              const SizedBox(width: 12),
+              Text(laundry.priceRange),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Services',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: laundry.services
+                .map((service) => Chip(label: Text(service)))
+                .toList(),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Price list',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 8),
+          ...services.map(
+            (service) => ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(service.name),
+              subtitle: Text(service.description),
+              trailing: Text('\$${service.price.toStringAsFixed(0)}'),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(Icons.timer_outlined, size: 18),
+              const SizedBox(width: 6),
+              Text('Estimated delivery: ${laundry.eta}'),
+            ],
+          ),
+          const SizedBox(height: 24),
+          PrimaryButton(
+            label: 'Book Pickup',
+            onPressed: () => context.push('/booking'),
+          ),
+        ],
+      ),
+    );
+  }
+}
