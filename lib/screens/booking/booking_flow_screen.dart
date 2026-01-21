@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:math' as math;
 
 import '../../data/mock/mock_data.dart';
 import '../../providers/mock_providers.dart';
@@ -9,6 +10,7 @@ import '../../widgets/time_slot_selector.dart';
 import '../../widgets/address_selector.dart';
 import '../../widgets/order_summary.dart';
 import '../../widgets/enhanced_button.dart';
+import '../../widgets/booking_success_modal.dart';
 import '../../models/service.dart';
 
 class BookingFlowScreen extends ConsumerStatefulWidget {
@@ -24,6 +26,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     String _pickupSlotId = 'pickup_today';
     String _deliverySlotId = 'delivery_tomorrow';
     String _address = '128 Market Street, San Francisco, CA';
+    bool _isLoading = false;
     
     final List<String> _steps = [
         'Services',
@@ -153,11 +156,42 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                 
                                 Expanded(
                                     flex: 2,
-                                    child: EnhancedButton(
-                                        label: _currentStep == 4 ? 'Confirm Booking' : 'Continue',
-                                        onPressed: _currentStep == 4 ? () {} : _nextStep,
-                                        icon: _currentStep == 4 ? Icons.check_circle : Icons.arrow_forward,
-                                    ),
+                                    child: _isLoading
+                                        ? Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            decoration: BoxDecoration(
+                                                color: primaryColor.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(16),
+                                            ),
+                                            child: Center(
+                                                child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                        SizedBox(
+                                                            width: 20,
+                                                            height: 20,
+                                                            child: CircularProgressIndicator(
+                                                                strokeWidth: 3,
+                                                                valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                                                            ),
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        Text(
+                                                            'Processing...',
+                                                            style: TextStyle(
+                                                                color: primaryColor,
+                                                                fontWeight: FontWeight.w600,
+                                                            ),
+                                                        ),
+                                                    ],
+                                                ),
+                                            ),
+                                        )
+                                        : EnhancedButton(
+                                            label: _currentStep == 4 ? 'Confirm Booking' : 'Continue',
+                                            onPressed: _currentStep == 4 ? _confirmBooking : _nextStep,
+                                            icon: _currentStep == 4 ? Icons.check_circle : Icons.arrow_forward,
+                                        ),
                                 ),
                             ],
                         ),
@@ -268,6 +302,49 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             pickupSlot: _pickupSlotText,
             deliverySlot: _deliverySlotText,
             address: _address,
+        );
+    }
+    
+    void _confirmBooking() async {
+        // Set loading state
+        setState(() {
+            _isLoading = true;
+        });
+        
+        // Simulate API call with a delay
+        await Future.delayed(const Duration(seconds: 2));
+        
+        // Generate a random order number
+        final orderNumber = 'ORD${math.Random().nextInt(900000) + 100000}';
+        
+        // Reset loading state
+        setState(() {
+            _isLoading = false;
+        });
+        
+        // Show success modal
+        if (!mounted) return;
+        
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => BookingSuccessModal(
+                orderNumber: orderNumber,
+                services: _selectedServices,
+                pickupTime: _pickupSlotText,
+                deliveryTime: _deliverySlotText,
+                address: _address,
+                onViewOrders: () {
+                    Navigator.of(context).pop(); // Close the modal
+                    // Navigate to orders screen
+                    Navigator.of(context).pushReplacementNamed('/orders');
+                },
+                onDone: () {
+                    Navigator.of(context).pop(); // Close the modal
+                    // Navigate back to home screen
+                    Navigator.of(context).pushReplacementNamed('/home');
+                },
+            ),
         );
     }
 }
