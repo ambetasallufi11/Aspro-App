@@ -122,14 +122,7 @@ class ProfileScreen extends ConsumerWidget {
                 subtitle: Text(user.email),
               ),
             ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.lock_outline),
-                title: const Text('Password'),
-                subtitle: Text(user.password),
-              ),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ],
           OutlinedButton.icon(
             onPressed: user == null
