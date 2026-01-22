@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
 
 import '../../data/mock/mock_data.dart';
@@ -335,14 +336,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 deliveryTime: _deliverySlotText,
                 address: _address,
                 onViewOrders: () {
-                    Navigator.of(context).pop(); // Close the modal
-                    // Navigate to orders screen
-                    Navigator.of(context).pushReplacementNamed('/orders');
+                    context.pop(); // Close the modal
+                    context.go('/orders');
                 },
                 onDone: () {
-                    Navigator.of(context).pop(); // Close the modal
-                    // Navigate back to home screen
-                    Navigator.of(context).pushReplacementNamed('/home');
+                    context.pop(); // Close the modal
+                    context.go('/home');
                 },
             ),
         );
