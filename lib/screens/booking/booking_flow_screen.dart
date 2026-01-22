@@ -3,16 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
 import 'package:aspro_app/l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 
 import '../../data/mock/mock_data.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/booking_step_indicator.dart';
 import '../../widgets/service_card.dart';
 import '../../widgets/time_slot_selector.dart';
+import '../../widgets/date_calendar_selector.dart';
 import '../../widgets/address_selector.dart';
 import '../../widgets/order_summary.dart';
 import '../../widgets/enhanced_button.dart';
 import '../../widgets/booking_success_modal.dart';
+import '../../widgets/time_selection_bottom_sheet.dart';
 import '../../models/service.dart';
 
 class BookingFlowScreen extends ConsumerStatefulWidget {
@@ -25,8 +28,8 @@ class BookingFlowScreen extends ConsumerStatefulWidget {
 class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     int _currentStep = 0;
     final Set<String> _selectedServices = {'Wash & Fold'};
-    String _pickupSlotId = 'pickup_today';
-    String _deliverySlotId = 'delivery_tomorrow';
+    String _pickupTimeSlot = '6:00 - 7:00 PM';
+    String _deliveryTimeSlot = '6:00 - 8:00 PM';
     String _address = '128 Market Street, San Francisco, CA';
     bool _isLoading = false;
     late List<String> _addresses;
@@ -76,6 +79,42 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     String _deliverySlotText(AppLocalizations l10n) => _deliverySlots(l10n)
         .firstWhere((slot) => slot.id == _deliverySlotId)
         .displayText;
+    // Date selection
+    late DateTime _pickupDate;
+    late DateTime _deliveryDate;
+    
+    // Available time slots
+    final List<String> _timeSlots = [
+        '8:00 - 10:00 AM',
+        '10:00 - 12:00 PM',
+        '12:00 - 2:00 PM',
+        '2:00 - 4:00 PM',
+        '4:00 - 6:00 PM',
+        '6:00 - 7:00 PM', // Added to match default pickup time
+        '6:00 - 8:00 PM',
+    ];
+    
+    final List<String> _steps = [
+        'Services',
+        'Pickup',
+        'Delivery',
+        'Address',
+        'Summary',
+    ];
+    
+    // For backward compatibility
+    final List<TimeSlot> _pickupSlots = [];
+    final List<TimeSlot> _deliverySlots = [];
+    
+    String get _pickupSlotText {
+        final formatter = DateFormat('E, MMM d');
+        return '${formatter.format(_pickupDate)} • $_pickupTimeSlot';
+    }
+    
+    String get _deliverySlotText {
+        final formatter = DateFormat('E, MMM d');
+        return '${formatter.format(_deliveryDate)} • $_deliveryTimeSlot';
+    }
 
     @override
     void initState() {
@@ -86,6 +125,80 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         if (_addresses.isNotEmpty && !_addresses.contains(_address)) {
             _address = _addresses.first;
         }
+        
+        // Initialize dates
+        _pickupDate = DateTime.now();
+        _deliveryDate = DateTime.now().add(const Duration(days: 1));
+        
+        // Initialize pickup and delivery slots for backward compatibility
+        _updatePickupSlots();
+        _updateDeliverySlots();
+    }
+    
+    void _updatePickupSlots() {
+        final now = DateTime.now();
+        final tomorrow = DateTime(now.year, now.month, now.day + 1);
+        
+        String dayLabel;
+        if (_pickupDate.year == now.year && 
+            _pickupDate.month == now.month && 
+            _pickupDate.day == now.day) {
+            dayLabel = 'Today';
+        } else if (_pickupDate.year == tomorrow.year && 
+                   _pickupDate.month == tomorrow.month && 
+                   _pickupDate.day == tomorrow.day) {
+            dayLabel = 'Tomorrow';
+        } else {
+            // Format as day of week
+            dayLabel = DateFormat('EEEE').format(_pickupDate);
+        }
+        
+        _pickupSlots.clear();
+        _pickupSlots.add(
+            TimeSlot(
+                id: 'pickup_${_pickupDate.millisecondsSinceEpoch}',
+                displayText: '$dayLabel • $_pickupTimeSlot',
+                day: dayLabel,
+                timeRange: _pickupTimeSlot,
+                date: _pickupDate,
+            ),
+        );
+    }
+    
+    void _updateDeliverySlots() {
+        final now = DateTime.now();
+        final tomorrow = DateTime(now.year, now.month, now.day + 1);
+        final dayAfterTomorrow = DateTime(now.year, now.month, now.day + 2);
+        
+        String dayLabel;
+        if (_deliveryDate.year == now.year && 
+            _deliveryDate.month == now.month && 
+            _deliveryDate.day == now.day) {
+            dayLabel = 'Today';
+        } else if (_deliveryDate.year == tomorrow.year && 
+                   _deliveryDate.month == tomorrow.month && 
+                   _deliveryDate.day == tomorrow.day) {
+            dayLabel = 'Tomorrow';
+        } else if (_deliveryDate.year == dayAfterTomorrow.year && 
+                   _deliveryDate.month == dayAfterTomorrow.month && 
+                   _deliveryDate.day == dayAfterTomorrow.day &&
+                   dayAfterTomorrow.weekday == DateTime.friday) {
+            dayLabel = 'Friday';
+        } else {
+            // Format as day of week
+            dayLabel = DateFormat('EEEE').format(_deliveryDate);
+        }
+        
+        _deliverySlots.clear();
+        _deliverySlots.add(
+            TimeSlot(
+                id: 'delivery_${_deliveryDate.millisecondsSinceEpoch}',
+                displayText: '$dayLabel • $_deliveryTimeSlot',
+                day: dayLabel,
+                timeRange: _deliveryTimeSlot,
+                date: _deliveryDate,
+            ),
+        );
     }
 
     void _nextStep() {
@@ -275,6 +388,72 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         );
     }
     
+    Future<void> _showPickupDatePicker(BuildContext context) async {
+        final now = DateTime.now();
+        final maxDate = now.add(const Duration(days: 30)); // 1 month limit
+        
+        final DateTime? picked = await showDatePicker(
+            context: context,
+            initialDate: _pickupDate,
+            firstDate: now,
+            lastDate: maxDate,
+            builder: (context, child) {
+                return Theme(
+                    data: Theme.of(context).copyWith(
+                        colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF2196F3), // Material Blue 500
+                            onPrimary: Colors.white,
+                        ),
+                        dialogBackgroundColor: Colors.white,
+                    ),
+                    child: child!,
+                );
+            },
+        );
+        
+        if (picked != null && picked != _pickupDate) {
+            setState(() {
+                _pickupDate = picked;
+                
+                // Ensure delivery date is after pickup date
+                if (_deliveryDate.isBefore(_pickupDate)) {
+                    _deliveryDate = _pickupDate.add(const Duration(days: 1));
+                    _updateDeliverySlots();
+                }
+                
+                _updatePickupSlots();
+            });
+            
+            // Automatically show time selection modal
+            _showTimeSelectionModal(context, true); // true for pickup, false for delivery
+        }
+    }
+    
+    void _showTimeSelectionModal(BuildContext context, bool isPickup) {
+        // Show a modern bottom sheet with time options
+        showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => TimeSelectionBottomSheet(
+                timeSlots: _timeSlots,
+                selectedTime: isPickup ? _pickupTimeSlot : _deliveryTimeSlot,
+                onTimeSelected: (time) {
+                    setState(() {
+                        if (isPickup) {
+                            _pickupTimeSlot = time;
+                            _updatePickupSlots();
+                        } else {
+                            _deliveryTimeSlot = time;
+                            _updateDeliverySlots();
+                        }
+                    });
+                    Navigator.pop(context);
+                },
+            ),
+        );
+    }
+    
     Widget _buildPickupTimeStep() {
         final l10n = AppLocalizations.of(context)!;
         return TimeSlotSelector(
@@ -283,8 +462,244 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             selectedSlotId: _pickupSlotId,
             onSlotSelected: (id) {
                 setState(() => _pickupSlotId = id);
+        final primaryColor = const Color(0xFF2196F3); // Material Blue 500
+        final theme = Theme.of(context);
+        
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                // Title row with calendar button
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                        Text(
+                            'Select Pickup Time',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                            ),
+                        ),
+                        
+                        ElevatedButton.icon(
+                            onPressed: () => _showPickupDatePicker(context),
+                            icon: const Icon(Icons.calendar_today, size: 18),
+                            label: const Text('Select Date'),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            ),
+                        ),
+                    ],
+                ),
+                
+                // Display selected date and time
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 24),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                            ),
+                        ],
+                        border: Border.all(
+                            color: primaryColor.withOpacity(0.2),
+                        ),
+                    ),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                            Row(
+                                children: [
+                                    Icon(
+                                        Icons.calendar_month,
+                                        color: primaryColor,
+                                        size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                        'Date',
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            
+                            Padding(
+                                padding: const EdgeInsets.only(left: 28, top: 4, bottom: 16),
+                                child: Text(
+                                    DateFormat('EEEE, MMMM d, yyyy').format(_pickupDate),
+                                    style: theme.textTheme.bodyMedium,
+                                ),
+                            ),
+                            
+                            Row(
+                                children: [
+                                    Icon(
+                                        Icons.access_time,
+                                        color: primaryColor,
+                                        size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                        'Time',
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            
+                            Padding(
+                                padding: const EdgeInsets.only(left: 28, top: 4),
+                                child: Row(
+                                    children: [
+                                        Text(
+                                            _pickupTimeSlot,
+                                            style: theme.textTheme.bodyMedium,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        TextButton(
+                                            onPressed: () => _showTimeSelectionModal(context, true),
+                                            child: Text(
+                                                'Change',
+                                                style: TextStyle(
+                                                    color: primaryColor,
+                                                    fontWeight: FontWeight.w600,
+                                                ),
+                                            ),
+                                            style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                minimumSize: const Size(0, 0),
+                                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Display selected time slot card
+                if (_pickupSlots.isNotEmpty)
+                    Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: primaryColor,
+                                width: 2,
+                            ),
+                        ),
+                        child: Row(
+                            children: [
+                                Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: primaryColor,
+                                        border: Border.all(
+                                            color: primaryColor,
+                                            width: 2,
+                                        ),
+                                    ),
+                                    child: Center(
+                                        child: Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: const BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.white,
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                
+                                const SizedBox(width: 16),
+                                
+                                Expanded(
+                                    child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                            Text(
+                                                _pickupSlots[0].day,
+                                                style: theme.textTheme.titleSmall?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: primaryColor,
+                                                ),
+                                            ),
+                                            
+                                            const SizedBox(height: 4),
+                                            
+                                            Text(
+                                                _pickupSlots[0].timeRange,
+                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                    color: Colors.grey.shade700,
+                                                ),
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                                
+                                Icon(
+                                    Icons.check_circle,
+                                    color: primaryColor,
+                                    size: 24,
+                                ),
+                            ],
+                        ),
+                    ),
+            ],
+        );
+    }
+    
+    Future<void> _showDeliveryDatePicker(BuildContext context) async {
+        final now = DateTime.now();
+        final maxDate = now.add(const Duration(days: 60)); // 2 months limit for delivery
+        
+        final DateTime? picked = await showDatePicker(
+            context: context,
+            initialDate: _deliveryDate,
+            firstDate: _pickupDate.add(const Duration(days: 1)), // At least one day after pickup
+            lastDate: maxDate,
+            builder: (context, child) {
+                return Theme(
+                    data: Theme.of(context).copyWith(
+                        colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF2196F3), // Material Blue 500
+                            onPrimary: Colors.white,
+                        ),
+                        dialogBackgroundColor: Colors.white,
+                    ),
+                    child: child!,
+                );
             },
         );
+        
+        if (picked != null && picked != _deliveryDate) {
+            setState(() {
+                _deliveryDate = picked;
+                _updateDeliverySlots();
+            });
+            
+            // Automatically show time selection modal
+            _showTimeSelectionModal(context, false); // false for delivery
+        }
     }
     
     Widget _buildDeliveryTimeStep() {
@@ -296,6 +711,137 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             onSlotSelected: (id) {
                 setState(() => _deliverySlotId = id);
             },
+        final primaryColor = const Color(0xFF2196F3); // Material Blue 500
+        final theme = Theme.of(context);
+        
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                // Title row with calendar button
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                        Text(
+                            'Select Delivery Time',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                            ),
+                        ),
+                        
+                        ElevatedButton.icon(
+                            onPressed: () => _showDeliveryDatePicker(context),
+                            icon: const Icon(Icons.calendar_today, size: 18),
+                            label: const Text('Select Date'),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            ),
+                        ),
+                    ],
+                ),
+                
+                // Display selected date and time
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 24),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                            ),
+                        ],
+                        border: Border.all(
+                            color: primaryColor.withOpacity(0.2),
+                        ),
+                    ),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                            Row(
+                                children: [
+                                    Icon(
+                                        Icons.calendar_month,
+                                        color: primaryColor,
+                                        size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                        'Date',
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            
+                            Padding(
+                                padding: const EdgeInsets.only(left: 28, top: 4, bottom: 16),
+                                child: Text(
+                                    DateFormat('EEEE, MMMM d, yyyy').format(_deliveryDate),
+                                    style: theme.textTheme.bodyMedium,
+                                ),
+                            ),
+                            
+                            Row(
+                                children: [
+                                    Icon(
+                                        Icons.access_time,
+                                        color: primaryColor,
+                                        size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                        'Time',
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            
+                            Padding(
+                                padding: const EdgeInsets.only(left: 28, top: 4),
+                                child: Row(
+                                    children: [
+                                        Text(
+                                            _deliveryTimeSlot,
+                                            style: theme.textTheme.bodyMedium,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        TextButton(
+                                            onPressed: () => _showTimeSelectionModal(context, false),
+                                            child: Text(
+                                                'Change',
+                                                style: TextStyle(
+                                                    color: primaryColor,
+                                                    fontWeight: FontWeight.w600,
+                                                ),
+                                            ),
+                                            style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                minimumSize: const Size(0, 0),
+                                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+            ],
         );
     }
     
