@@ -143,14 +143,14 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-void _showAppSettings(BuildContext context, WidgetRef ref) {
+void _showAppSettings(BuildContext parentContext, WidgetRef ref) {
   bool notificationsEnabled = true;
   bool smsUpdatesEnabled = false;
   bool emailUpdatesEnabled = true;
   Locale? selectedLocale = ref.read(localeProvider);
 
   showModalBottomSheet<void>(
-    context: context,
+    context: parentContext,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -232,7 +232,13 @@ void _showAppSettings(BuildContext context, WidgetRef ref) {
                     leading: const Icon(Icons.lock_outline),
                     title: Text(l10n.privacy),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Future.delayed(
+                        const Duration(milliseconds: 150),
+                        () => _showPrivacyModal(parentContext),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   SizedBox(
@@ -240,6 +246,116 @@ void _showAppSettings(BuildContext context, WidgetRef ref) {
                     child: ElevatedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       child: Text(l10n.done),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void _showPrivacyModal(BuildContext context) {
+  bool shareUsage = true;
+  bool personalized = true;
+  bool locationAccess = true;
+
+  showModalBottomSheet<void>(
+    context: context,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      final theme = Theme.of(context);
+      final l10n = AppLocalizations.of(context)!;
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(Icons.lock_outline,
+                            color: theme.colorScheme.primary),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.privacyTitle,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.privacySubtitle,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SwitchListTile(
+                    value: shareUsage,
+                    onChanged: (value) =>
+                        setState(() => shareUsage = value),
+                    title: Text(l10n.privacyShareUsage),
+                    subtitle: Text(l10n.privacyShareUsageDesc),
+                    secondary: const Icon(Icons.analytics_outlined),
+                  ),
+                  SwitchListTile(
+                    value: personalized,
+                    onChanged: (value) =>
+                        setState(() => personalized = value),
+                    title: Text(l10n.privacyPersonalized),
+                    subtitle: Text(l10n.privacyPersonalizedDesc),
+                    secondary: const Icon(Icons.auto_awesome_outlined),
+                  ),
+                  SwitchListTile(
+                    value: locationAccess,
+                    onChanged: (value) =>
+                        setState(() => locationAccess = value),
+                    title: Text(l10n.privacyLocation),
+                    subtitle: Text(l10n.privacyLocationDesc),
+                    secondary: const Icon(Icons.my_location_outlined),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(l10n.privacyDone),
                     ),
                   ),
                 ],
