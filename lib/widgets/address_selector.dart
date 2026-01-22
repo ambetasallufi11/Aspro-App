@@ -4,12 +4,14 @@ class AddressSelector extends StatelessWidget {
     final List<String> addresses;
     final String selectedAddress;
     final Function(String) onAddressSelected;
+    final VoidCallback? onAddAddress;
 
     const AddressSelector({
         super.key,
         required this.addresses,
         required this.selectedAddress,
         required this.onAddressSelected,
+        this.onAddAddress,
     });
 
     @override
@@ -111,10 +113,7 @@ class AddressSelector extends StatelessWidget {
                 Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: OutlinedButton.icon(
-                        onPressed: () {
-                            // This would typically open a dialog or navigate to an address entry screen
-                            // For now, we'll just leave it as a placeholder
-                        },
+                        onPressed: onAddAddress,
                         icon: Icon(Icons.add, color: primaryColor),
                         label: Text(
                             'Add New Address',
