@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../models/order.dart';
 
@@ -8,23 +9,24 @@ class OrderCard extends StatelessWidget {
 
   const OrderCard({super.key, required this.order, this.onTap});
 
-  String get _statusLabel {
+  String _statusLabel(AppLocalizations l10n) {
     switch (order.status) {
       case OrderStatus.pending:
-        return 'Pending';
+        return l10n.statusPending;
       case OrderStatus.pickedUp:
-        return 'Picked up';
+        return l10n.statusPickedUp;
       case OrderStatus.washing:
-        return 'Washing';
+        return l10n.statusWashing;
       case OrderStatus.ready:
-        return 'Ready';
+        return l10n.statusReady;
       case OrderStatus.delivered:
-        return 'Delivered';
+        return l10n.statusDelivered;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
@@ -59,7 +61,7 @@ class OrderCard extends StatelessWidget {
                           ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 4),
-                    Text(_statusLabel),
+                    Text(_statusLabel(l10n)),
                   ],
                 ),
               ),

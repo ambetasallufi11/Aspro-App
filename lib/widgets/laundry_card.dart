@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../models/laundry.dart';
+import '../utils/service_localization.dart';
 
 class LaundryCard extends StatelessWidget {
   final Laundry laundry;
@@ -10,6 +12,7 @@ class LaundryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
@@ -78,7 +81,10 @@ class LaundryCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${laundry.distanceKm.toStringAsFixed(1)} km • ${laundry.priceRange}',
+              l10n.distancePriceRange(
+                laundry.distanceKm.toStringAsFixed(1),
+                laundry.priceRange,
+              ),
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium,
@@ -89,12 +95,13 @@ class LaundryCard extends StatelessWidget {
               runSpacing: 8,
               children: laundry.services
                   .take(3)
-                  .map((service) => Chip(label: Text(service)))
+                  .map((service) =>
+                      Chip(label: Text(localizeServiceName(l10n, service))))
                   .toList(),
             ),
             const SizedBox(height: 12),
             Text(
-              'ETA: ${laundry.eta}',
+              l10n.etaLabel(laundry.eta),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),

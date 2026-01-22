@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../../providers/mock_providers.dart';
 import '../../widgets/primary_button.dart';
@@ -34,7 +35,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      _showMessage('Please enter your email and password.');
+      _showMessage(AppLocalizations.of(context)!.loginEmptyFields);
       return;
     }
 
@@ -44,13 +45,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (isValid) {
       context.go('/home');
     } else {
-      _showMessage('Wrong email or password. Please try again.');
+      _showMessage(AppLocalizations.of(context)!.loginInvalid);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -70,14 +72,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Welcome back',
+                l10n.welcomeBack,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Sign in to continue managing your laundry.',
+                l10n.loginSubtitle,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurface.withOpacity(0.7),
                     ),
@@ -85,18 +87,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined),
+                decoration: InputDecoration(
+                  labelText: l10n.emailLabel,
+                  prefixIcon: const Icon(Icons.email_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock_outline),
+                decoration: InputDecoration(
+                  labelText: l10n.passwordLabel,
+                  prefixIcon: const Icon(Icons.lock_outline),
                 ),
               ),
               const SizedBox(height: 12),
@@ -104,22 +106,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {},
-                  child: const Text('Forgot password?'),
+                  child: Text(l10n.forgotPassword),
                 ),
               ),
               const SizedBox(height: 12),
               PrimaryButton(
-                label: 'Sign in',
+                label: l10n.signIn,
                 onPressed: _handleLogin,
               ),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('New here? '),
+                  Text('${l10n.newHere} '),
                   TextButton(
                     onPressed: () => context.push('/auth/register'),
-                    child: const Text('Create account'),
+                    child: Text(l10n.createAccount),
                   ),
                 ],
               ),

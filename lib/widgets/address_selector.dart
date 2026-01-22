@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 class AddressSelector extends StatelessWidget {
     final List<String> addresses;
@@ -18,6 +19,7 @@ class AddressSelector extends StatelessWidget {
     Widget build(BuildContext context) {
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final theme = Theme.of(context);
+        final l10n = AppLocalizations.of(context)!;
 
         return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,7 +27,7 @@ class AddressSelector extends StatelessWidget {
                 Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
-                        'Pickup Address',
+                        l10n.pickupAddressTitle,
                         style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                         ),
@@ -116,7 +118,7 @@ class AddressSelector extends StatelessWidget {
                         onPressed: onAddAddress,
                         icon: Icon(Icons.add, color: primaryColor),
                         label: Text(
-                            'Add New Address',
+                            l10n.addNewAddress,
                             style: TextStyle(color: primaryColor),
                         ),
                         style: OutlinedButton.styleFrom(

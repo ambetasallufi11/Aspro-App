@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../../providers/mock_providers.dart';
 import '../../widgets/primary_button.dart';
+import '../../utils/service_localization.dart';
 
 class LaundryDetailsScreen extends ConsumerWidget {
   final String? laundryId;
@@ -14,6 +16,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final laundries = ref.watch(laundriesProvider);
     final services = ref.watch(servicesProvider);
+    final l10n = AppLocalizations.of(context)!;
     final laundry = laundries.firstWhere(
       (item) => item.id == laundryId,
       orElse: () => laundries.first,
@@ -21,7 +24,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Laundry Details'),
+        title: Text(l10n.laundryDetailsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -68,14 +71,17 @@ class LaundryDetailsScreen extends ConsumerWidget {
             children: [
               Icon(Icons.star, color: Theme.of(context).colorScheme.primary, size: 18),
               const SizedBox(width: 4),
-              Text('${laundry.rating} • ${laundry.distanceKm} km'),
+              Text(l10n.ratingDistance(
+                laundry.rating.toStringAsFixed(1),
+                laundry.distanceKm.toStringAsFixed(1),
+              )),
               const SizedBox(width: 12),
               Text(laundry.priceRange),
             ],
           ),
           const SizedBox(height: 16),
           Text(
-            'Services',
+            l10n.servicesTitle,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -85,12 +91,14 @@ class LaundryDetailsScreen extends ConsumerWidget {
             spacing: 8,
             runSpacing: 8,
             children: laundry.services
-                .map((service) => Chip(label: Text(service)))
+                .map((service) => Chip(
+                      label: Text(localizeServiceName(l10n, service)),
+                    ))
                 .toList(),
           ),
           const SizedBox(height: 20),
           Text(
-            'Price list',
+            l10n.priceListTitle,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -99,8 +107,9 @@ class LaundryDetailsScreen extends ConsumerWidget {
           ...services.map(
             (service) => ListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text(service.name),
-              subtitle: Text(service.description),
+              title: Text(localizeServiceName(l10n, service.name)),
+              subtitle:
+                  Text(localizeServiceDescription(l10n, service.description)),
               trailing: Text('\$${service.price.toStringAsFixed(0)}'),
             ),
           ),
@@ -109,12 +118,12 @@ class LaundryDetailsScreen extends ConsumerWidget {
             children: [
               Icon(Icons.timer_outlined, color: Theme.of(context).colorScheme.primary, size: 18),
               const SizedBox(width: 6),
-              Text('Estimated delivery: ${laundry.eta}'),
+              Text(l10n.estimatedDelivery(laundry.eta)),
             ],
           ),
           const SizedBox(height: 24),
           PrimaryButton(
-            label: 'Book Pickup',
+            label: l10n.bookPickup,
             onPressed: () => context.push('/booking'),
           ),
         ],

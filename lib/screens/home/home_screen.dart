@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../../providers/mock_providers.dart';
 import '../../widgets/laundry_card.dart';
@@ -22,10 +23,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final laundries = ref.watch(laundriesProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nearby Laundries'),
+        title: Text(l10n.homeNearbyLaundries),
         actions: [
           IconButton(
             icon: const Icon(Icons.receipt_long),
@@ -130,7 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Top picks near you',
+                      l10n.homeTopPicks,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -155,7 +157,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/booking'),
         icon: const Icon(Icons.add_location_alt_outlined),
-        label: const Text('Book Pickup'),
+        label: Text(l10n.bookPickup),
       ),
     );
   }

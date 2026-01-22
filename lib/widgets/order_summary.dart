@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 import '../models/service.dart';
+import '../utils/service_localization.dart';
 
 class OrderSummary extends StatelessWidget {
     final Set<String> selectedServices;
@@ -31,6 +33,7 @@ class OrderSummary extends StatelessWidget {
     Widget build(BuildContext context) {
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final theme = Theme.of(context);
+        final l10n = AppLocalizations.of(context)!;
 
         return Container(
             padding: const EdgeInsets.all(20),
@@ -50,7 +53,7 @@ class OrderSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                     Text(
-                        'Order Summary',
+                        l10n.orderSummaryTitle,
                         style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: primaryColor,
@@ -61,7 +64,7 @@ class OrderSummary extends StatelessWidget {
                     
                     // Services section
                     Text(
-                        'Selected Services',
+                        l10n.selectedServicesLabel,
                         style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                         ),
@@ -96,7 +99,7 @@ class OrderSummary extends StatelessWidget {
                                             const SizedBox(width: 8),
                                             
                                             Text(
-                                                service.name,
+                                                localizeServiceName(l10n, service.name),
                                                 style: theme.textTheme.bodyLarge,
                                             ),
                                         ],
@@ -127,7 +130,7 @@ class OrderSummary extends StatelessWidget {
                             const SizedBox(width: 8),
                             
                             Text(
-                                'Schedule',
+                                l10n.scheduleLabel,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
                                 ),
@@ -142,7 +145,7 @@ class OrderSummary extends StatelessWidget {
                         child: Row(
                             children: [
                                 Text(
-                                    'Pickup:',
+                                    l10n.pickupTimeLabel,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                         color: Colors.grey.shade700,
                                     ),
@@ -165,7 +168,7 @@ class OrderSummary extends StatelessWidget {
                         child: Row(
                             children: [
                                 Text(
-                                    'Delivery:',
+                                    l10n.deliveryTimeLabel,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                         color: Colors.grey.shade700,
                                     ),
@@ -202,7 +205,7 @@ class OrderSummary extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                         Text(
-                                            'Address',
+                                            l10n.addressLabel,
                                             style: theme.textTheme.titleMedium?.copyWith(
                                                 fontWeight: FontWeight.w600,
                                             ),
@@ -227,7 +230,7 @@ class OrderSummary extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                             Text(
-                                'Total',
+                                l10n.totalLabel,
                                 style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
                                 ),

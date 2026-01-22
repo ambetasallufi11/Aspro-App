@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
@@ -59,7 +60,7 @@ class AppRouter {
     errorBuilder: (context, state) => Scaffold(
       body: Center(
         child: Text(
-          'Route not found',
+          AppLocalizations.of(context)!.routeNotFound,
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/service.dart';
+import '../utils/service_localization.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 class ServiceCard extends StatelessWidget {
     final Service service;
@@ -17,6 +19,7 @@ class ServiceCard extends StatelessWidget {
     Widget build(BuildContext context) {
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final theme = Theme.of(context);
+        final l10n = AppLocalizations.of(context)!;
 
         return GestureDetector(
             onTap: onTap,
@@ -70,7 +73,7 @@ class ServiceCard extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                         Text(
-                                            service.name,
+                                            localizeServiceName(l10n, service.name),
                                             style: theme.textTheme.titleMedium?.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 color: isSelected ? primaryColor : Colors.black,
@@ -80,7 +83,7 @@ class ServiceCard extends StatelessWidget {
                                         const SizedBox(height: 4),
                                         
                                         Text(
-                                            service.description,
+                                            localizeServiceDescription(l10n, service.description),
                                             style: theme.textTheme.bodyMedium?.copyWith(
                                                 color: Colors.grey.shade700,
                                             ),

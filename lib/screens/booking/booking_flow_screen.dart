@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../../data/mock/mock_data.dart';
 import '../../providers/mock_providers.dart';
@@ -30,49 +31,49 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     bool _isLoading = false;
     late List<String> _addresses;
     
-    final List<String> _steps = [
-        'Services',
-        'Pickup',
-        'Delivery',
-        'Address',
-        'Summary',
+    List<String> _steps(AppLocalizations l10n) => [
+        l10n.bookingStepServices,
+        l10n.bookingStepPickup,
+        l10n.bookingStepDelivery,
+        l10n.bookingStepAddress,
+        l10n.bookingStepSummary,
     ];
-    
-    final List<TimeSlot> _pickupSlots = [
+
+    List<TimeSlot> _pickupSlots(AppLocalizations l10n) => [
         TimeSlot(
             id: 'pickup_today',
-            displayText: 'Today • 6:00 - 7:00 PM',
-            day: 'Today',
+            displayText: '${l10n.today} • 6:00 - 7:00 PM',
+            day: l10n.today,
             timeRange: '6:00 - 7:00 PM',
         ),
         TimeSlot(
             id: 'pickup_tomorrow',
-            displayText: 'Tomorrow • 8:00 - 10:00 AM',
-            day: 'Tomorrow',
+            displayText: '${l10n.tomorrow} • 8:00 - 10:00 AM',
+            day: l10n.tomorrow,
             timeRange: '8:00 - 10:00 AM',
         ),
     ];
-    
-    final List<TimeSlot> _deliverySlots = [
+
+    List<TimeSlot> _deliverySlots(AppLocalizations l10n) => [
         TimeSlot(
             id: 'delivery_tomorrow',
-            displayText: 'Tomorrow • 6:00 - 8:00 PM',
-            day: 'Tomorrow',
+            displayText: '${l10n.tomorrow} • 6:00 - 8:00 PM',
+            day: l10n.tomorrow,
             timeRange: '6:00 - 8:00 PM',
         ),
         TimeSlot(
             id: 'delivery_friday',
-            displayText: 'Fri • 6:00 - 8:00 PM',
-            day: 'Friday',
+            displayText: '${l10n.fridayShort} • 6:00 - 8:00 PM',
+            day: l10n.fridayShort,
             timeRange: '6:00 - 8:00 PM',
         ),
     ];
-    
-    String get _pickupSlotText => _pickupSlots
+
+    String _pickupSlotText(AppLocalizations l10n) => _pickupSlots(l10n)
         .firstWhere((slot) => slot.id == _pickupSlotId)
         .displayText;
-        
-    String get _deliverySlotText => _deliverySlots
+
+    String _deliverySlotText(AppLocalizations l10n) => _deliverySlots(l10n)
         .firstWhere((slot) => slot.id == _deliverySlotId)
         .displayText;
 
@@ -102,13 +103,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     @override
     Widget build(BuildContext context) {
         final services = ref.watch(servicesProvider);
-        final authState = ref.watch(authProvider);
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
-    final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
+        final l10n = AppLocalizations.of(context)!;
 
         return Scaffold(
             appBar: AppBar(
-                title: const Text('Book Pickup'),
+                title: Text(l10n.bookingTitle),
                 leading: IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.of(context).maybePop(),
@@ -123,7 +123,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: BookingStepIndicator(
                             currentStep: _currentStep,
-                            steps: _steps,
+                            steps: _steps(l10n),
                         ),
                     ),
                     
@@ -157,7 +157,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                     Expanded(
                                         flex: 1,
                                         child: EnhancedButton(
-                                            label: 'Back',
+                                            label: l10n.back,
                                             onPressed: _previousStep,
                                             isOutlined: true,
                                             icon: Icons.arrow_back,
@@ -177,9 +177,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                                 borderRadius: BorderRadius.circular(16),
                                             ),
                                             child: Center(
-                                                child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
+                                            child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
                                                         SizedBox(
                                                             width: 20,
                                                             height: 20,
@@ -190,7 +190,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                                         ),
                                                         const SizedBox(width: 12),
                                                         Text(
-                                                            'Processing...',
+                                                            l10n.processing,
                                                             style: TextStyle(
                                                                 color: primaryColor,
                                                                 fontWeight: FontWeight.w600,
@@ -201,7 +201,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                             ),
                                         )
                                         : EnhancedButton(
-                                            label: _currentStep == 4 ? 'Confirm Booking' : 'Continue',
+                                            label: _currentStep == 4 ? l10n.confirmBooking : l10n.continueLabel,
                                             onPressed: _currentStep == 4 ? _confirmBooking : _nextStep,
                                             icon: _currentStep == 4 ? Icons.check_circle : Icons.arrow_forward,
                                         ),
@@ -232,13 +232,14 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     Widget _buildServicesStep(List<Service> services) {
+        final l10n = AppLocalizations.of(context)!;
         return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
                 Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
-                        'Select Services',
+                        l10n.selectServicesTitle,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                         ),
@@ -246,7 +247,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 ),
                 
                 Text(
-                    'Choose the services you need for your laundry',
+                    l10n.selectServicesSubtitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey.shade700,
                     ),
@@ -275,9 +276,10 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     Widget _buildPickupTimeStep() {
+        final l10n = AppLocalizations.of(context)!;
         return TimeSlotSelector(
-            title: 'Select Pickup Time',
-            timeSlots: _pickupSlots,
+            title: l10n.selectPickupTimeTitle,
+            timeSlots: _pickupSlots(l10n),
             selectedSlotId: _pickupSlotId,
             onSlotSelected: (id) {
                 setState(() => _pickupSlotId = id);
@@ -286,9 +288,10 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     Widget _buildDeliveryTimeStep() {
+        final l10n = AppLocalizations.of(context)!;
         return TimeSlotSelector(
-            title: 'Select Delivery Time',
-            timeSlots: _deliverySlots,
+            title: l10n.selectDeliveryTimeTitle,
+            timeSlots: _deliverySlots(l10n),
             selectedSlotId: _deliverySlotId,
             onSlotSelected: (id) {
                 setState(() => _deliverySlotId = id);
@@ -308,11 +311,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     Widget _buildSummaryStep(List<Service> services) {
+        final l10n = AppLocalizations.of(context)!;
         return OrderSummary(
             selectedServices: _selectedServices,
             allServices: services,
-            pickupSlot: _pickupSlotText,
-            deliverySlot: _deliverySlotText,
+            pickupSlot: _pickupSlotText(l10n),
+            deliverySlot: _deliverySlotText(l10n),
             address: _address,
         );
     }
@@ -336,6 +340,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         
         // Show success modal
         if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         
         showDialog(
             context: context,
@@ -343,8 +348,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             builder: (context) => BookingSuccessModal(
                 orderNumber: orderNumber,
                 services: _selectedServices,
-                pickupTime: _pickupSlotText,
-                deliveryTime: _deliverySlotText,
+                pickupTime: _pickupSlotText(l10n),
+                deliveryTime: _deliverySlotText(l10n),
                 address: _address,
                 onViewOrders: () {
                     context.pop(); // Close the modal
@@ -361,31 +366,32 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     Future<void> _showAddAddressModal() async {
         final controller = TextEditingController();
         final theme = Theme.of(context);
+        final l10n = AppLocalizations.of(context)!;
         final newAddress = await showDialog<String>(
             context: context,
             builder: (context) {
                 return AlertDialog(
-                    title: const Text('Add New Address'),
+                    title: Text(l10n.addAddressTitle),
                     content: TextField(
                         controller: controller,
                         autofocus: true,
                         textInputAction: TextInputAction.done,
-                        decoration: const InputDecoration(
-                            hintText: 'Enter pickup address',
+                        decoration: InputDecoration(
+                            hintText: l10n.addAddressHint,
                         ),
                         onSubmitted: (_) => Navigator.of(context).pop(controller.text.trim()),
                     ),
                     actions: [
                         TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Cancel'),
+                            child: Text(l10n.cancel),
                         ),
                         ElevatedButton(
                             onPressed: () => Navigator.of(context).pop(controller.text.trim()),
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: theme.primaryColor,
                             ),
-                            child: const Text('Save'),
+                            child: Text(l10n.save),
                         ),
                     ],
                 );

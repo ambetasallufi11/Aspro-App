@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../../providers/mock_providers.dart';
 import '../../widgets/status_timeline.dart';
@@ -14,6 +15,7 @@ class OrderTrackingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final orders = ref.watch(ordersProvider);
+    final l10n = AppLocalizations.of(context)!;
     final order = orders.firstWhere(
       (item) => item.id == orderId,
       orElse: () => orders.first,
@@ -21,7 +23,7 @@ class OrderTrackingScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Tracking'),
+        title: Text(l10n.orderTrackingTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).maybePop(),
@@ -58,7 +60,7 @@ class OrderTrackingScreen extends ConsumerWidget {
                       ?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
-                Text('Order #${order.id.toUpperCase()}'),
+                Text(l10n.orderNumberLabel(order.id.toUpperCase())),
                 const SizedBox(height: 12),
                 StatusTimeline(status: order.status),
               ],
@@ -66,7 +68,7 @@ class OrderTrackingScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Delivery route',
+            l10n.deliveryRoute,
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
@@ -135,7 +137,7 @@ class OrderTrackingScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                      'Driver is on the way. You will receive updates automatically.'),
+                      l10n.driverOnTheWay),
                 ),
               ],
             ),

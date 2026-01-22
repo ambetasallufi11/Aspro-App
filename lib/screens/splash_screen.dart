@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -43,6 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -87,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Local Wash & Delivery Service',
+                    l10n.splashTagline,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withOpacity(0.9),

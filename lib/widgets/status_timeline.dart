@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../models/order.dart';
 
@@ -24,12 +25,13 @@ class StatusTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final steps = [
-      'Pending',
-      'Picked up',
-      'Washing',
-      'Ready',
-      'Delivered',
+      l10n.statusPending,
+      l10n.statusPickedUp,
+      l10n.statusWashing,
+      l10n.statusReady,
+      l10n.statusDelivered,
     ];
 
     return Column(

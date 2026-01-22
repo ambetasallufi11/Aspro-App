@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:aspro_app/l10n/app_localizations.dart';
 
 import '../../providers/mock_providers.dart';
+import '../../providers/locale_provider.dart';
 import '../../providers/theme_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -14,10 +16,11 @@ class ProfileScreen extends ConsumerWidget {
     final user = authState.currentUser;
     final themeMode = ref.watch(themeModeProvider);
     final isDark = themeMode == ThemeMode.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(l10n.profileTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).maybePop(),
@@ -40,13 +43,13 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user?.name ?? 'Guest',
+                    user?.name ?? l10n.guest,
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  Text(user?.email ?? 'Not signed in'),
+                  Text(user?.email ?? l10n.notSignedIn),
                   Text(user?.phone ?? ''),
                 ],
               ),
@@ -54,7 +57,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Saved addresses',
+            l10n.savedAddressesTitle,
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
@@ -72,7 +75,7 @@ class ProfileScreen extends ConsumerWidget {
           )),
           const SizedBox(height: 24),
           Text(
-            'Preferences',
+            l10n.preferencesTitle,
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
@@ -85,22 +88,22 @@ class ProfileScreen extends ConsumerWidget {
               ref.read(themeModeProvider.notifier).state =
                   value ? ThemeMode.dark : ThemeMode.light;
             },
-            title: const Text('Dark mode'),
+            title: Text(l10n.darkMode),
             secondary: const Icon(Icons.dark_mode_outlined),
           ),
           const SizedBox(height: 12),
           Card(
             child: ListTile(
               leading: const Icon(Icons.settings_outlined),
-              title: const Text('App settings'),
+              title: Text(l10n.appSettings),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
+              onTap: () => _showAppSettings(context, ref),
             ),
           ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.help_outline),
-              title: const Text('Help & support'),
+              title: Text(l10n.helpSupport),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {},
             ),
@@ -108,7 +111,7 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           if (user != null) ...[
             Text(
-              'Credentials',
+              l10n.credentialsTitle,
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -118,7 +121,7 @@ class ProfileScreen extends ConsumerWidget {
             Card(
               child: ListTile(
                 leading: const Icon(Icons.mail_outline),
-                title: const Text('Email'),
+                title: Text(l10n.emailLabel),
                 subtitle: Text(user.email),
               ),
             ),
@@ -132,10 +135,119 @@ class ProfileScreen extends ConsumerWidget {
                     context.go('/auth/login');
                   },
             icon: const Icon(Icons.logout),
-            label: const Text('Logout'),
+            label: Text(l10n.logout),
           ),
         ],
       ),
     );
   }
+}
+
+void _showAppSettings(BuildContext context, WidgetRef ref) {
+  bool notificationsEnabled = true;
+  bool smsUpdatesEnabled = false;
+  bool emailUpdatesEnabled = true;
+  Locale? selectedLocale = ref.read(localeProvider);
+
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      final theme = Theme.of(context);
+      final l10n = AppLocalizations.of(context)!;
+      return StatefulBuilder(
+        builder: (context, setState) {
+          final currentLocale =
+              selectedLocale ?? Localizations.localeOf(context);
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  Text(
+                    l10n.appSettings,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SwitchListTile(
+                    value: notificationsEnabled,
+                    onChanged: (value) =>
+                        setState(() => notificationsEnabled = value),
+                    title: Text(l10n.pushNotifications),
+                    secondary: const Icon(Icons.notifications_outlined),
+                  ),
+                  SwitchListTile(
+                    value: smsUpdatesEnabled,
+                    onChanged: (value) =>
+                        setState(() => smsUpdatesEnabled = value),
+                    title: Text(l10n.smsUpdates),
+                    secondary: const Icon(Icons.sms_outlined),
+                  ),
+                  SwitchListTile(
+                    value: emailUpdatesEnabled,
+                    onChanged: (value) =>
+                        setState(() => emailUpdatesEnabled = value),
+                    title: Text(l10n.emailUpdates),
+                    secondary: const Icon(Icons.mail_outline),
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    leading: const Icon(Icons.language_outlined),
+                    title: Text(l10n.language),
+                  ),
+                  RadioListTile<Locale?>(
+                    value: const Locale('en'),
+                    groupValue: currentLocale,
+                    onChanged: (value) {
+                      setState(() => selectedLocale = value);
+                      ref.read(localeProvider.notifier).state = value;
+                    },
+                    title: Text(l10n.english),
+                  ),
+                  RadioListTile<Locale?>(
+                    value: const Locale('sq'),
+                    groupValue: currentLocale,
+                    onChanged: (value) {
+                      setState(() => selectedLocale = value);
+                      ref.read(localeProvider.notifier).state = value;
+                    },
+                    title: Text(l10n.albanian),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.lock_outline),
+                    title: Text(l10n.privacy),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {},
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(l10n.done),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }
