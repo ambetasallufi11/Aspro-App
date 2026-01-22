@@ -27,6 +27,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     String _deliverySlotId = 'delivery_tomorrow';
     String _address = '128 Market Street, San Francisco, CA';
     bool _isLoading = false;
+    late List<String> _addresses;
     
     final List<String> _steps = [
         'Services',
@@ -73,6 +74,17 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     String get _deliverySlotText => _deliverySlots
         .firstWhere((slot) => slot.id == _deliverySlotId)
         .displayText;
+
+    @override
+    void initState() {
+        super.initState();
+        final authState = ref.read(authProvider);
+        final fallbackAddresses = MockData.user.addresses;
+        _addresses = List.of(authState.currentUser?.addresses ?? fallbackAddresses);
+        if (_addresses.isNotEmpty && !_addresses.contains(_address)) {
+            _address = _addresses.first;
+        }
+    }
 
     void _nextStep() {
         if (_currentStep < 4) {
@@ -284,14 +296,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     Widget _buildAddressStep() {
-        final user = ref.watch(userProvider);
-        
         return AddressSelector(
-            addresses: user.addresses,
+            addresses: _addresses,
             selectedAddress: _address,
             onAddressSelected: (address) {
                 setState(() => _address = address);
             },
+            onAddAddress: _showAddAddressModal,
         );
     }
     
@@ -346,5 +357,55 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 },
             ),
         );
+    }
+
+    Future<void> _showAddAddressModal() async {
+        final controller = TextEditingController();
+        final theme = Theme.of(context);
+        final newAddress = await showDialog<String>(
+            context: context,
+            builder: (context) {
+                return AlertDialog(
+                    title: const Text('Add New Address'),
+                    content: TextField(
+                        controller: controller,
+                        autofocus: true,
+                        textInputAction: TextInputAction.done,
+                        decoration: const InputDecoration(
+                            hintText: 'Enter pickup address',
+                        ),
+                        onSubmitted: (_) => Navigator.of(context).pop(controller.text.trim()),
+                    ),
+                    actions: [
+                        TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: theme.primaryColor,
+                            ),
+                            child: const Text('Save'),
+                        ),
+                    ],
+                );
+            },
+        );
+
+        final trimmed = (newAddress ?? '').trim();
+        if (trimmed.isEmpty) {
+            return;
+        }
+
+        if (_addresses.contains(trimmed)) {
+            setState(() => _address = trimmed);
+            return;
+        }
+
+        setState(() {
+            _addresses = [..._addresses, trimmed];
+            _address = trimmed;
+        });
     }
 }
