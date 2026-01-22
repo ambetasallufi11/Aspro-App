@@ -39,6 +39,7 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   intl: ^0.20.1
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:
