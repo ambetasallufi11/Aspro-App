@@ -60,6 +60,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
+              Center(
+                child: Image.asset(
+                  'assets/aspro-logo.png',
+                  height: 96,
+                  width: 96,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 16),
               Text(
                 'Welcome back',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -102,12 +111,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               PrimaryButton(
                 label: 'Sign in',
                 onPressed: _handleLogin,
-              ),
-              const SizedBox(height: 16),
-              PrimaryButton(
-                label: 'Continue as guest',
-                isOutlined: true,
-                onPressed: () => context.go('/home'),
               ),
               const Spacer(),
               Row(
