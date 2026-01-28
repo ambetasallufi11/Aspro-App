@@ -89,24 +89,28 @@ class MockData {
       name: 'Wash & Fold',
       description: 'Everyday laundry with gentle detergent.',
       price: 18.0,
+      merchantId: 'l1',
     ),
     Service(
       id: 's2',
       name: 'Dry Clean',
       description: 'Professional dry cleaning for delicates.',
       price: 28.0,
+      merchantId: 'l1',
     ),
     Service(
       id: 's3',
       name: 'Express',
       description: 'Priority turnaround within 8 hours.',
       price: 12.0,
+      merchantId: 'l1',
     ),
     Service(
       id: 's4',
       name: 'Premium Care',
       description: 'Hand-finished premium garments.',
       price: 32.0,
+      merchantId: 'l1',
     ),
   ];
 

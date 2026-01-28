@@ -6,10 +6,8 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../providers/locale_provider.dart';
-import '../../data/mock/mock_data.dart';
 import '../../models/payment_method.dart';
 import '../../providers/api_providers.dart';
-import '../../providers/mock_providers.dart' as mock;
 import '../../services/payment_service.dart';
 import 'booking_methods.dart';
 import '../../widgets/booking_step_indicator.dart';
@@ -25,7 +23,9 @@ import '../../widgets/payment_method_selector.dart';
 import '../../models/service.dart';
 
 class BookingFlowScreen extends ConsumerStatefulWidget {
-    const BookingFlowScreen({super.key});
+    final String? merchantId;
+
+    const BookingFlowScreen({super.key, this.merchantId});
 
     @override
     ConsumerState<BookingFlowScreen> createState() => _BookingFlowScreenState();
@@ -87,6 +87,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     void initState() {
         super.initState();
         final authState = ref.read(authProvider);
+        _merchantId = int.tryParse(widget.merchantId ?? '') ?? _merchantId;
         _addresses = List.of(authState.currentUser?.addresses ?? const <String>[]);
         if (_addresses.isNotEmpty && !_addresses.contains(_address)) {
             _address = _addresses.first;
@@ -185,8 +186,6 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     Widget build(BuildContext context) {
         final servicesAsync = ref.watch(servicesProvider);
         final authState = ref.watch(authProvider);
-        final user = ref.watch(mock.userProvider);
-        final paymentMethods = ref.watch(mock.paymentMethodsProvider);
         final l10n = context.l10n;
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final addresses = authState.currentUser?.addresses ?? const <String>[];
@@ -222,7 +221,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 ),
                 body: servicesAsync.when(
                     data: (services) {
-                        _servicesCache = services;
+                        final filteredServices = services
+                            .where((service) => service.merchantId == _merchantId.toString())
+                            .toList();
+                        final effectiveServices =
+                            filteredServices.isNotEmpty ? filteredServices : services;
+                        _servicesCache = effectiveServices;
                         return Column(
                             children: [
                                 // Custom step indicator
@@ -239,7 +243,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                         padding: const EdgeInsets.all(16),
                                         child: AnimatedSwitcher(
                                             duration: const Duration(milliseconds: 300),
-                                            child: _buildCurrentStepContent(services),
+                                            child: _buildCurrentStepContent(effectiveServices),
                                         ),
                                     ),
                                 ),
@@ -873,7 +877,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     Widget _buildPaymentStep(List<Service> services) {
-        final user = ref.read(mock.userProvider);
+        const walletBalance = 0.0;
         final totalPrice = calculateTotalPrice(services, _selectedServices);
         
         return PaymentMethodSelector(
@@ -883,7 +887,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 });
             },
             showWalletOption: true,
-            walletBalance: user.walletBalance,
+            walletBalance: walletBalance,
             orderAmount: totalPrice,
         );
     }

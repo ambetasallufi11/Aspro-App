@@ -193,6 +193,7 @@ final servicesProvider = FutureProvider<List<Service>>((ref) async {
       name: s['name'] as String,
       description: (s['description'] as String?) ?? '',
       price: double.tryParse(s['price']?.toString() ?? '') ?? 0.0,
+      merchantId: (s['merchant_id'] as int?)?.toString(),
     );
   }).toList();
 });
