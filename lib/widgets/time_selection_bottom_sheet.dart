@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class TimeSelectionBottomSheet extends StatelessWidget {
     final List<String> timeSlots;
@@ -14,23 +15,27 @@ class TimeSelectionBottomSheet extends StatelessWidget {
 
     @override
     Widget build(BuildContext context) {
-        final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final theme = Theme.of(context);
+        final primaryColor = theme.colorScheme.primary;
         
         return Container(
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
                 ),
                 boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
+                        color: primaryColor.withOpacity(0.1),
+                        blurRadius: 20,
                         offset: const Offset(0, -5),
                     ),
                 ],
+                border: Border.all(
+                    color: Colors.white.withOpacity(0.8),
+                    width: 1,
+                ),
             ),
             padding: const EdgeInsets.only(
                 top: 16,
@@ -42,26 +47,48 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    // Handle bar at top
+                    // Handle bar at top with gradient
                     Center(
                         child: Container(
                             width: 40,
                             height: 4,
                             margin: const EdgeInsets.only(bottom: 16),
                             decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
+                                gradient: LinearGradient(
+                                    colors: [
+                                        primaryColor.withOpacity(0.3),
+                                        primaryColor.withOpacity(0.5),
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                ),
                                 borderRadius: BorderRadius.circular(2),
                             ),
                         ),
                     ),
                     
-                    // Title
-                    Text(
-                        'Select Time',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                        ),
+                    // Title with gradient underline
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                            Text(
+                                'Select Time',
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: theme.textTheme.titleLarge?.color,
+                                    letterSpacing: -0.5,
+                                ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                                height: 2,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                    gradient: AppTheme.primaryGradient,
+                                    borderRadius: BorderRadius.circular(1),
+                                ),
+                            ),
+                        ],
                     ),
                     
                     const SizedBox(height: 24),
@@ -84,18 +111,19 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                             return AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
                                 decoration: BoxDecoration(
-                                    color: isSelected ? primaryColor : Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: isSelected ? AppTheme.primaryGradient : null,
+                                    color: isSelected ? null : Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                        color: isSelected ? primaryColor : Colors.grey.shade300,
-                                        width: isSelected ? 2 : 1,
+                                        color: isSelected ? Colors.transparent : Colors.grey.shade300,
+                                        width: isSelected ? 0 : 1,
                                     ),
                                     boxShadow: isSelected
                                         ? [
                                             BoxShadow(
                                                 color: primaryColor.withOpacity(0.3),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 2),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 3),
                                             ),
                                         ]
                                         : null,
@@ -104,15 +132,29 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                                     color: Colors.transparent,
                                     child: InkWell(
                                         onTap: () => onTimeSelected(timeSlot),
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(16),
                                         child: Center(
-                                            child: Text(
-                                                timeSlot,
-                                                style: TextStyle(
-                                                    color: isSelected ? Colors.white : Colors.black87,
-                                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                                    fontSize: 14,
-                                                ),
+                                            child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                    if (isSelected)
+                                                        const Padding(
+                                                            padding: EdgeInsets.only(right: 6),
+                                                            child: Icon(
+                                                                Icons.access_time,
+                                                                color: Colors.white,
+                                                                size: 16,
+                                                            ),
+                                                        ),
+                                                    Text(
+                                                        timeSlot,
+                                                        style: TextStyle(
+                                                            color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
+                                                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                                            fontSize: 14,
+                                                        ),
+                                                    ),
+                                                ],
                                             ),
                                         ),
                                     ),

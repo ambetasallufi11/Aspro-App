@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../theme/app_theme.dart';
 import '../models/laundry.dart';
 
 class LaundryCard extends StatelessWidget {
@@ -10,65 +10,193 @@ class LaundryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).cardTheme.shadowColor ?? const Color(0xFFAED9E0).withOpacity(0.2),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (laundry.imageUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: SizedBox(
-                  height: 120,
-                  width: double.infinity,
-                  child: Image.asset(
-                    laundry.imageUrl!,
-                    fit: BoxFit.cover,
-                  ),
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      transform: Matrix4.identity()..translate(0.0, 0.0, 0.0),
+      transformAlignment: Alignment.center,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.cardTheme.color,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white.withOpacity(0.8),
+                width: 1,
               ),
-            if (laundry.imageUrl != null)
-              const SizedBox(height: 12),
-            Row(
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    laundry.name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+                if (laundry.imageUrl != null)
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: SizedBox(
+                          height: 140,
+                          width: double.infinity,
+                          child: Image.asset(
+                            laundry.imageUrl!,
+                            fit: BoxFit.cover,
+                          ),
                         ),
+                      ),
+                      Positioned(
+                        top: 12,
+                        right: 12,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.primaryGradient,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: primaryColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.star, size: 16, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(
+                                laundry.rating.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                if (laundry.imageUrl != null)
+                  const SizedBox(height: 16),
+                
+                // Laundry name with gradient underline
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      laundry.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      height: 2,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.primaryGradient,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ],
                 ),
+                
+                const SizedBox(height: 12),
+                
+                // Distance and price with icons
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 16,
+                      color: primaryColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${laundry.distanceKm.toStringAsFixed(1)} km',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.attach_money,
+                      size: 16,
+                      color: primaryColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      laundry.priceRange,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Services chips with modern styling
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: laundry.services
+                      .take(3)
+                      .map((service) => _buildServiceChip(service, context))
+                      .toList(),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // ETA with gradient background
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    gradient: LinearGradient(
+                      colors: [
+                        primaryColor.withOpacity(0.1),
+                        primaryColor.withOpacity(0.05),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.star, size: 14, color: Colors.white),
-                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.access_time_rounded,
+                        size: 16,
+                        color: primaryColor,
+                      ),
+                      const SizedBox(width: 6),
                       Text(
-                        laundry.rating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                        'ETA: ${laundry.eta}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: primaryColor,
                         ),
                       ),
                     ],
@@ -76,30 +204,32 @@ class LaundryCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              '${laundry.distanceKm.toStringAsFixed(1)} km • ${laundry.priceRange}',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium,
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: laundry.services
-                  .take(3)
-                  .map((service) => Chip(label: Text(service)))
-                  .toList(),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'ETA: ${laundry.eta}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildServiceChip(String service, BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: primaryColor.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: primaryColor.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        service,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: primaryColor,
         ),
       ),
     );
