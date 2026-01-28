@@ -99,10 +99,11 @@ class _OrderSummaryState extends ConsumerState<OrderSummary> {
                         final service = widget.allServices.firstWhere(
                             (s) => s.name == serviceName,
                             orElse: () => const Service(
-                                id: '',
-                                name: '',
-                                description: '',
-                                price: 0,
+                              id: '',
+                              name: '',
+                              description: '',
+                              price: 0,
+                              merchantId: null,
                             ),
                         );
                         

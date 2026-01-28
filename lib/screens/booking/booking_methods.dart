@@ -96,8 +96,16 @@ Future<void> confirmBooking({
         .toList()
         .cast<Map<String, dynamic>>();
     await api.createOrder(merchantId: merchantId, items: items);
+    ref.invalidate(ordersProvider);
   } catch (e) {
-    // Ignore for demo; order creation failed
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Order creation failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   // Show success modal

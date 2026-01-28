@@ -49,7 +49,9 @@ class AppRouter {
       ),
       GoRoute(
         path: '/booking',
-        builder: (context, state) => const BookingFlowScreen(),
+        builder: (context, state) => BookingFlowScreen(
+          merchantId: state.uri.queryParameters['merchantId'],
+        ),
       ),
       GoRoute(
         path: '/orders',

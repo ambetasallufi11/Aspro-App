@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/laundry.dart';
 import '../../models/promo_code.dart';
+import '../../models/service.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/api_providers.dart';
 import '../../providers/promo_code_provider.dart';
@@ -35,7 +36,6 @@ class LaundryDetailsScreen extends ConsumerWidget {
     }
 
     final laundries = laundriesAsync.value ?? [];
-    final services = servicesAsync.value ?? [];
     if (laundries.isEmpty) {
       return const Scaffold(
         body: Center(child: Text('No laundries found')),
@@ -45,6 +45,15 @@ class LaundryDetailsScreen extends ConsumerWidget {
       (item) => item.id == laundryId,
       orElse: () => laundries.first,
     );
+    final allServices = servicesAsync.value ?? <Service>[];
+    final matchingServices = allServices
+        .where((service) => service.merchantId == laundry.id)
+        .toList();
+    final services = matchingServices.isNotEmpty
+        ? matchingServices
+        : allServices
+            .where((service) => laundry.services.contains(service.name))
+            .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -123,7 +132,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
                 ),
           ),
           const SizedBox(height: 8),
-          ...services.map(
+          ..._uniqueServicesByName(services).map(
             (service) => ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(context.l10n.t(service.name)),
@@ -145,7 +154,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
               Expanded(
                 child: PrimaryButton(
                   label: context.l10n.t('Book Pickup'),
-                  onPressed: () => context.push('/booking'),
+                  onPressed: () => context.push('/booking?merchantId=${laundry.id}'),
                 ),
               ),
               const SizedBox(width: 12),
@@ -270,5 +279,16 @@ class LaundryDetailsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  List<Service> _uniqueServicesByName(List<Service> services) {
+    final seen = <String>{};
+    final unique = <Service>[];
+    for (final service in services) {
+      if (seen.add(service.name)) {
+        unique.add(service);
+      }
+    }
+    return unique;
   }
 }
