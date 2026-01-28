@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Modern color palette
-  static const _primaryBlue = Color(0xFF4FACFE); // Bright blue
-  static const _secondaryBlue = Color(0xFF00F2FE); // Cyan blue for gradients
-  static const _accentPurple = Color(0xFF6A7BFF); // Soft purple for accents
-  static const _accentTeal = Color(0xFF00CFDE); // Teal for secondary accents
-  static const _highlightBlue = Color(0xFF00B4DB); // Highlight blue
+  // Modern color palette with new blue
+  static const _primaryBlue = Color.fromARGB(255, 128, 205, 244); // New blue color
+  static const _secondaryBlue = Color.fromARGB(255, 128, 205, 244); // Slightly darker blue for gradients
+  static const _lightBlue = Color.fromARGB(255, 128, 205, 244); // Lighter blue for gradients
   
   // Text colors
   static const _textPrimary = Color(0xFF2D3748); // Dark blue-gray for primary text
@@ -21,7 +19,7 @@ class AppTheme {
   );
   
   static const accentGradient = LinearGradient(
-    colors: [_accentPurple, _highlightBlue],
+    colors: [Color.fromARGB(255, 126, 204, 243), _primaryBlue],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -38,8 +36,8 @@ class AppTheme {
       brightness: Brightness.light,
       primary: _primaryBlue,
       onPrimary: Colors.white,
-      secondary: _accentTeal,
-      tertiary: _accentPurple,
+      secondary: _secondaryBlue,
+      tertiary: _lightBlue,
       surface: Colors.white,
       background: Colors.white,
       onBackground: _textPrimary,
@@ -175,8 +173,8 @@ class AppTheme {
       brightness: Brightness.dark,
       primary: _primaryBlue,
       onPrimary: Colors.white,
-      secondary: _accentTeal,
-      tertiary: _accentPurple,
+      secondary: _secondaryBlue,
+      tertiary: _lightBlue,
       surface: const Color(0xFF1A202C),
       background: const Color(0xFF121A29),
       onBackground: Colors.white,
