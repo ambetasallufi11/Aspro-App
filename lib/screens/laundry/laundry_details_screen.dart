@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/primary_button.dart';
 
@@ -21,7 +22,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Laundry Details'),
+        title: Text(context.l10n.t('Laundry Details')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -75,7 +76,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Services',
+            context.l10n.t('Services'),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -85,12 +86,12 @@ class LaundryDetailsScreen extends ConsumerWidget {
             spacing: 8,
             runSpacing: 8,
             children: laundry.services
-                .map((service) => Chip(label: Text(service)))
+                .map((service) => Chip(label: Text(context.l10n.t(service))))
                 .toList(),
           ),
           const SizedBox(height: 20),
           Text(
-            'Price list',
+            context.l10n.t('Price list'),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -99,8 +100,8 @@ class LaundryDetailsScreen extends ConsumerWidget {
           ...services.map(
             (service) => ListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text(service.name),
-              subtitle: Text(service.description),
+              title: Text(context.l10n.t(service.name)),
+              subtitle: Text(context.l10n.t(service.description)),
               trailing: Text('\$${service.price.toStringAsFixed(0)}'),
             ),
           ),
@@ -109,12 +110,12 @@ class LaundryDetailsScreen extends ConsumerWidget {
             children: [
               Icon(Icons.timer_outlined, color: Theme.of(context).colorScheme.primary, size: 18),
               const SizedBox(width: 6),
-              Text('Estimated delivery: ${laundry.eta}'),
+              Text('${context.l10n.t('Estimated delivery')}: ${context.l10n.t(laundry.eta)}'),
             ],
           ),
           const SizedBox(height: 24),
           PrimaryButton(
-            label: 'Book Pickup',
+            label: context.l10n.t('Book Pickup'),
             onPressed: () => context.push('/booking'),
           ),
         ],

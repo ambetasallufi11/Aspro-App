@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+
 class PrivacySecurityScreen extends StatefulWidget {
   const PrivacySecurityScreen({super.key});
 
@@ -25,32 +27,33 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) {
+        final l10n = context.l10n;
         return AlertDialog(
-          title: const Text('Change password'),
+          title: Text(l10n.t('Change password')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: currentController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Current password',
+                decoration: InputDecoration(
+                  labelText: l10n.t('Current password'),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: newController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'New password',
+                decoration: InputDecoration(
+                  labelText: l10n.t('New password'),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: confirmController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm password',
+                decoration: InputDecoration(
+                  labelText: l10n.t('Confirm password'),
                 ),
               ),
             ],
@@ -58,18 +61,18 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(l10n.t('Cancel')),
             ),
             FilledButton(
               onPressed: () {
                 if (newController.text.isEmpty ||
                     newController.text != confirmController.text) {
-                  _showSnack('Passwords do not match');
+                  _showSnack(l10n.t('Passwords do not match'));
                   return;
                 }
                 Navigator.pop(context, true);
               },
-              child: const Text('Save'),
+              child: Text(l10n.t('Save')),
             ),
           ],
         );
@@ -77,7 +80,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     );
 
     if (result == true) {
-      _showSnack('Password updated');
+      _showSnack(context.l10n.t('Password updated'));
     }
   }
 
@@ -87,13 +90,13 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Privacy & security'),
+        title: Text(context.l10n.t('Privacy & security')),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'Security',
+            context.l10n.t('Security'),
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -102,7 +105,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.lock_outline),
-              title: const Text('Change password'),
+              title: Text(context.l10n.t('Change password')),
               trailing: const Icon(Icons.chevron_right),
               onTap: _showChangePassword,
             ),
@@ -110,13 +113,13 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
           SwitchListTile(
             value: _twoFactor,
             onChanged: (value) => setState(() => _twoFactor = value),
-            title: const Text('Two‑factor authentication'),
+            title: Text(context.l10n.t('Two-factor authentication')),
             secondary: const Icon(Icons.verified_user_outlined),
           ),
           SwitchListTile(
             value: _biometrics,
             onChanged: (value) => setState(() => _biometrics = value),
-            title: const Text('Biometric unlock'),
+            title: Text(context.l10n.t('Biometric unlock')),
             secondary: const Icon(Icons.fingerprint),
           ),
         ],

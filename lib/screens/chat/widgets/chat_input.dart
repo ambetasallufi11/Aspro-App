@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 class ChatInput extends StatefulWidget {
   final Function(String) onSendMessage;
   final VoidCallback onAttachImage;
@@ -69,19 +70,19 @@ class _ChatInputState extends State<ChatInput> {
             IconButton(
               icon: const Icon(Icons.add_photo_alternate_outlined),
               onPressed: widget.onAttachImage,
-              tooltip: 'Attach Image',
+              tooltip: context.l10n.t('Attach Image'),
             ),
             IconButton(
               icon: const Icon(Icons.request_page_outlined),
               onPressed: widget.onSpecialRequest,
-              tooltip: 'Special Request',
+              tooltip: context.l10n.t('Special Request'),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  hintText: 'Type a message...',
+                  hintText: context.l10n.t('Type a message'),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
                     borderSide: BorderSide.none,
@@ -111,7 +112,7 @@ class _ChatInputState extends State<ChatInput> {
                         color: theme.colorScheme.primary,
                       ),
                       onPressed: _handleSend,
-                      tooltip: 'Send Message',
+                      tooltip: context.l10n.t('Send'),
                     )
                   : const SizedBox(
                       key: ValueKey('empty'),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class DateCalendarSelector extends StatefulWidget {
@@ -259,14 +260,17 @@ class _DateCalendarSelectorState extends State<DateCalendarSelector> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                             Text(
-                                                'Selected Date',
+                                                context.l10n.t('Selected Date'),
                                                 style: theme.textTheme.bodySmall?.copyWith(
                                                     color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
                                                 ),
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                                DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay!),
+                                                DateFormat(
+                                                  'EEEE, MMMM d, yyyy',
+                                                  Localizations.localeOf(context).languageCode,
+                                                ).format(_selectedDay!),
                                                 style: theme.textTheme.bodyLarge?.copyWith(
                                                     fontWeight: FontWeight.w600,
                                                     color: primaryColor,
@@ -291,7 +295,7 @@ class _DateCalendarSelectorState extends State<DateCalendarSelector> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                         Text(
-                                            'Select Time',
+                                            context.l10n.t('Select Time'),
                                             style: theme.textTheme.titleSmall?.copyWith(
                                                 fontWeight: FontWeight.w700,
                                             ),

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../models/transaction.dart';
 import '../../models/payment_method.dart';
 import '../../models/order.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/status_timeline.dart';
 
@@ -26,7 +27,7 @@ class OrderTrackingScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Tracking'),
+        title: Text(context.l10n.t('Order Tracking')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).maybePop(),
@@ -63,7 +64,7 @@ class OrderTrackingScreen extends ConsumerWidget {
                       ?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
-                Text('Order #${order.id.toUpperCase()}'),
+                Text('${context.l10n.t('Order #')}${order.id.toUpperCase()}'),
                 const SizedBox(height: 12),
                 StatusTimeline(status: order.status),
                 
@@ -75,7 +76,7 @@ class OrderTrackingScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Delivery route',
+            context.l10n.t('Delivery route'),
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
@@ -144,7 +145,10 @@ class OrderTrackingScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                      'Driver is on the way. You will receive updates automatically.'),
+                    context.l10n.t(
+                      'Driver is on the way. You will receive updates automatically.',
+                    ),
+                  ),
                 ),
               ],
             ),

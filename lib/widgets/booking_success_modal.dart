@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+import '../l10n/app_localizations.dart';
 class BookingSuccessModal extends StatefulWidget {
     final String orderNumber;
     final Set<String> services;
@@ -137,7 +138,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                             
                             // Success message
                             Text(
-                                'Booking Successful!',
+                                context.l10n.t('Booking Successful!'),
                                 style: theme.textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: primaryColor,
@@ -148,7 +149,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                             const SizedBox(height: 8),
                             
                             Text(
-                                'Your laundry pickup has been scheduled',
+                                context.l10n.t('Your laundry pickup has been scheduled'),
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                     color: Colors.grey.shade700,
                                 ),
@@ -158,7 +159,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                             const SizedBox(height: 4),
                             
                             Text(
-                                'Order #${widget.orderNumber}',
+                                '${context.l10n.t('Order #')}${widget.orderNumber}',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey.shade600,
                                     fontWeight: FontWeight.w500,
@@ -196,7 +197,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                             Text(
-                                                                'Services',
+                                                                context.l10n.t('Services'),
                                                                 style: theme.textTheme.bodyMedium?.copyWith(
                                                                     fontWeight: FontWeight.w600,
                                                                 ),
@@ -205,7 +206,9 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                                                             const SizedBox(height: 4),
                                                             
                                                             Text(
-                                                                widget.services.join(', '),
+                                                                widget.services
+                                                                    .map((service) => context.l10n.t(service))
+                                                                    .join(', '),
                                                                 style: theme.textTheme.bodyMedium,
                                                             ),
                                                         ],
@@ -233,7 +236,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                             Text(
-                                                                'Pickup',
+                                                                context.l10n.t('Pickup'),
                                                                 style: theme.textTheme.bodyMedium?.copyWith(
                                                                     fontWeight: FontWeight.w600,
                                                                 ),
@@ -270,7 +273,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                             Text(
-                                                                'Delivery',
+                                                                context.l10n.t('Delivery'),
                                                                 style: theme.textTheme.bodyMedium?.copyWith(
                                                                     fontWeight: FontWeight.w600,
                                                                 ),
@@ -307,7 +310,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                             Text(
-                                                                'Address',
+                                                                context.l10n.t('Address'),
                                                                 style: theme.textTheme.bodyMedium?.copyWith(
                                                                     fontWeight: FontWeight.w600,
                                                                 ),
@@ -344,7 +347,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                                                     borderRadius: BorderRadius.circular(12),
                                                 ),
                                             ),
-                                            child: const Text('View My Orders'),
+                                            child: Text(context.l10n.t('View My Orders')),
                                         ),
                                     ),
                                     
@@ -362,7 +365,7 @@ class _BookingSuccessModalState extends State<BookingSuccessModal> with SingleTi
                                                     borderRadius: BorderRadius.circular(12),
                                                 ),
                                             ),
-                                            child: const Text('Done'),
+                                            child: Text(context.l10n.t('Done')),
                                         ),
                                     ),
                                 ],

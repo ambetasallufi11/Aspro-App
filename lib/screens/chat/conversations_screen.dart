@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/chat_conversation.dart';
 import '../../providers/chat_provider.dart';
 
@@ -15,7 +16,7 @@ class ConversationsScreen extends ConsumerWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Messages'),
+        title: Text(context.l10n.t('Messages')),
         elevation: 1,
       ),
       body: conversations.isEmpty
@@ -36,12 +37,12 @@ class ConversationsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No conversations yet',
+            context.l10n.t('No conversations yet'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Start chatting with a merchant',
+            context.l10n.t('Start chatting with a merchant'),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],

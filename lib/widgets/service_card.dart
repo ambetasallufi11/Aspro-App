@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/service.dart';
 
 class ServiceCard extends StatelessWidget {
@@ -70,7 +71,7 @@ class ServiceCard extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                         Text(
-                                            service.name,
+                                            context.l10n.t(service.name),
                                             style: theme.textTheme.titleMedium?.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 color: isSelected ? primaryColor : Colors.black,
@@ -80,7 +81,7 @@ class ServiceCard extends StatelessWidget {
                                         const SizedBox(height: 4),
                                         
                                         Text(
-                                            service.description,
+                                            context.l10n.t(service.description),
                                             style: theme.textTheme.bodyMedium?.copyWith(
                                                 color: Colors.grey.shade700,
                                             ),

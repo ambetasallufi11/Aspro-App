@@ -148,12 +148,16 @@ class EnhancedButton extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                 ],
-                Text(
-                    label,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isGradient ? Colors.white : null,
+                Flexible(
+                    child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: isGradient ? Colors.white : null,
+                        ),
                     ),
                 ),
             ],

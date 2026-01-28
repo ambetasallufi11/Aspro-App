@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class TimeSlot {
@@ -139,9 +140,9 @@ class _TimeSlotSelectorState extends State<TimeSlotSelector> {
                                                         size: 16,
                                                     ),
                                                     const SizedBox(width: 6),
-                                                    const Text(
-                                                        'Select Date',
-                                                        style: TextStyle(
+                                                    Text(
+                                                        context.l10n.t('Select Date'),
+                                                        style: const TextStyle(
                                                             color: Colors.white,
                                                             fontWeight: FontWeight.w600,
                                                             fontSize: 12,
@@ -172,7 +173,10 @@ class _TimeSlotSelectorState extends State<TimeSlotSelector> {
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                            DateFormat('EEEE, MMMM d').format(widget.selectedDate!),
+                                            DateFormat(
+                                              'EEEE, MMMM d',
+                                              Localizations.localeOf(context).languageCode,
+                                            ).format(widget.selectedDate!),
                                             style: theme.textTheme.bodyMedium?.copyWith(
                                                 color: theme.textTheme.titleMedium?.color,
                                                 fontWeight: FontWeight.w600,

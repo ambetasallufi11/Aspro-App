@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/mock_providers.dart';
 import '../../providers/theme_provider.dart';
 
@@ -17,7 +18,7 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(context.l10n.t('Profile')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).maybePop(),
@@ -40,13 +41,13 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user?.name ?? 'Guest',
+                    user?.name ?? context.l10n.t('Guest'),
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  Text(user?.email ?? 'Not signed in'),
+                  Text(user?.email ?? context.l10n.t('Not signed in')),
                   Text(user?.phone ?? ''),
                 ],
               ),
@@ -54,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Saved addresses',
+            context.l10n.t('Saved addresses'),
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
@@ -72,7 +73,7 @@ class ProfileScreen extends ConsumerWidget {
           )),
           const SizedBox(height: 24),
           Text(
-            'Preferences',
+            context.l10n.t('Preferences'),
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
@@ -85,14 +86,14 @@ class ProfileScreen extends ConsumerWidget {
               ref.read(themeModeProvider.notifier).state =
                   value ? ThemeMode.dark : ThemeMode.light;
             },
-            title: const Text('Dark mode'),
+            title: Text(context.l10n.t('Dark mode')),
             secondary: const Icon(Icons.dark_mode_outlined),
           ),
           const SizedBox(height: 12),
           Card(
             child: ListTile(
               leading: const Icon(Icons.settings_outlined),
-              title: const Text('App settings'),
+              title: Text(context.l10n.t('App settings')),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/profile/settings'),
             ),
@@ -100,7 +101,7 @@ class ProfileScreen extends ConsumerWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.privacy_tip_outlined),
-              title: const Text('Privacy & security'),
+              title: Text(context.l10n.t('Privacy & security')),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/profile/privacy'),
             ),
@@ -108,7 +109,7 @@ class ProfileScreen extends ConsumerWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.help_outline),
-              title: const Text('Help & support'),
+              title: Text(context.l10n.t('Help & support')),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {},
             ),
@@ -116,7 +117,7 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           if (user != null) ...[
             Text(
-              'Credentials',
+              context.l10n.t('Credentials'),
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -126,7 +127,7 @@ class ProfileScreen extends ConsumerWidget {
             Card(
               child: ListTile(
                 leading: const Icon(Icons.mail_outline),
-                title: const Text('Email'),
+                title: Text(context.l10n.t('Email')),
                 subtitle: Text(user.email),
               ),
             ),
@@ -140,7 +141,7 @@ class ProfileScreen extends ConsumerWidget {
                     context.go('/auth/login');
                   },
             icon: const Icon(Icons.logout),
-            label: const Text('Logout'),
+            label: Text(context.l10n.t('Logout')),
           ),
         ],
       ),
