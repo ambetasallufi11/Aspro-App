@@ -220,116 +220,36 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     elevation: 0,
                     backgroundColor: Colors.white,
                 ),
-                elevation: 0,
-                backgroundColor: Colors.white,
-            ),
-              body: servicesAsync.when(
-                data: (services) {
-                  _servicesCache = services;
-                  return Column(
-                    children: [
-                      // Custom step indicator
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: BookingStepIndicator(
-                          currentStep: _currentStep,
-                          steps: _steps(context),
-                        ),
-                      ),
-                      // Main content area
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.all(16),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            child: _buildCurrentStepContent(services),
-                          ),
-                        ),
-                      ),
-                      _buildBottomButton(services),
-                    ],
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, __) => const Center(child: Text('Failed to load services')),
-              ),
-                    // Bottom navigation buttons
-                    Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, -5),
-                                ),
-                            ],
-                        ),
-                        child: Row(
+                body: servicesAsync.when(
+                    data: (services) {
+                        _servicesCache = services;
+                        return Column(
                             children: [
-                                if (_currentStep > 0)
-                                    Expanded(
-                                        flex: 1,
-                                        child: EnhancedButton(
-                                            label: l10n.t('Back'),
-                                            onPressed: _previousStep,
-                                            isOutlined: true,
-                                            icon: Icons.arrow_back,
+                                // Custom step indicator
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    child: BookingStepIndicator(
+                                        currentStep: _currentStep,
+                                        steps: _steps(context),
+                                    ),
+                                ),
+                                // Main content area
+                                Expanded(
+                                    child: SingleChildScrollView(
+                                        padding: const EdgeInsets.all(16),
+                                        child: AnimatedSwitcher(
+                                            duration: const Duration(milliseconds: 300),
+                                            child: _buildCurrentStepContent(services),
                                         ),
                                     ),
-                                
-                                if (_currentStep > 0)
-                                    const SizedBox(width: 12),
-                                
-                                Expanded(
-                                    flex: 2,
-                                    child: _isLoading
-                                        ? Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 12),
-                                            decoration: BoxDecoration(
-                                                color: primaryColor.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(16),
-                                            ),
-                                            child: Center(
-                                                child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                        SizedBox(
-                                                            width: 20,
-                                                            height: 20,
-                                                            child: CircularProgressIndicator(
-                                                                strokeWidth: 3,
-                                                                valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-                                                            ),
-                                                        ),
-                                                        const SizedBox(width: 12),
-                                                        Text(
-                                                            l10n.t('Processing...'),
-                                                            style: TextStyle(
-                                                                color: primaryColor,
-                                                                fontWeight: FontWeight.w600,
-                                                            ),
-                                                        ),
-                                                    ],
-                                                ),
-                                            ),
-                                        )
-                                        : EnhancedButton(
-                                            label: _currentStep == 5 ? 'Confirm Booking' : 'Continue',
-                                            onPressed: _currentStep == 5 ? _onConfirmBooking : _nextStep,
-                                            icon: _currentStep == 5 ? Icons.check_circle : Icons.arrow_forward,
-                                        ),
                                 ),
+                                _buildBottomButton(),
                             ],
-                        ),
-                    ),
-                ],
-
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, __) => const Center(child: Text('Failed to load services')),
-
+                        );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (_, __) => const Center(child: Text('Failed to load services')),
+                ),
             ),
         );
     }
@@ -351,6 +271,79 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             default:
                 return const SizedBox.shrink();
         }
+    }
+
+    Widget _buildBottomButton() {
+        final l10n = context.l10n;
+        final primaryColor = const Color(0xFF2196F3);
+
+        return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, -5),
+                    ),
+                ],
+            ),
+            child: Row(
+                children: [
+                    if (_currentStep > 0)
+                        Expanded(
+                            flex: 1,
+                            child: EnhancedButton(
+                                label: l10n.t('Back'),
+                                onPressed: _previousStep,
+                                isOutlined: true,
+                                icon: Icons.arrow_back,
+                            ),
+                        ),
+                    if (_currentStep > 0) const SizedBox(width: 12),
+                    Expanded(
+                        flex: 2,
+                        child: _isLoading
+                            ? Container(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Center(
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                            SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child: CircularProgressIndicator(
+                                                    strokeWidth: 3,
+                                                    valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                                                ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                                l10n.t('Processing...'),
+                                                style: TextStyle(
+                                                    color: primaryColor,
+                                                    fontWeight: FontWeight.w600,
+                                                ),
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            )
+                            : EnhancedButton(
+                                label: _currentStep == 5 ? 'Confirm Booking' : 'Continue',
+                                onPressed: _currentStep == 5 ? _onConfirmBooking : _nextStep,
+                                icon: _currentStep == 5 ? Icons.check_circle : Icons.arrow_forward,
+                            ),
+                    ),
+                ],
+            ),
+        );
     }
     
     Widget _buildServicesStep(List<Service> services) {
