@@ -147,4 +147,4 @@ For any inquiries, please reach out to the project maintainers.
 
 ---
 
-Developed with ❤️ by Ambeta Sallufi
+Developed by Ambeta & Alkida
