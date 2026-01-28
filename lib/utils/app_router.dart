@@ -8,6 +8,8 @@ import '../screens/home/home_screen.dart';
 import '../screens/laundry/laundry_details_screen.dart';
 import '../screens/orders/order_tracking_screen.dart';
 import '../screens/orders/orders_screen.dart';
+import '../screens/profile/app_settings_screen.dart';
+import '../screens/profile/privacy_security_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/splash_screen.dart';
 
@@ -54,6 +56,14 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/profile/settings',
+        builder: (context, state) => const AppSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/profile/privacy',
+        builder: (context, state) => const PrivacySecurityScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

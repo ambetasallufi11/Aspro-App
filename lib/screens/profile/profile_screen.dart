@@ -94,7 +94,15 @@ class ProfileScreen extends ConsumerWidget {
               leading: const Icon(Icons.settings_outlined),
               title: const Text('App settings'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
+              onTap: () => context.push('/profile/settings'),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.privacy_tip_outlined),
+              title: const Text('Privacy & security'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/profile/privacy'),
             ),
           ),
           Card(
