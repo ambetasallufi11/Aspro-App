@@ -71,6 +71,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           ),
           actions: [
             _HeaderActionButton(
+              icon: Icons.chat_outlined,
+              onPressed: () => context.push('/conversations'),
+              color: primaryColor,
+            ),
+            _HeaderActionButton(
               icon: Icons.receipt_long,
               onPressed: () => context.push('/orders'),
               color: primaryColor,
