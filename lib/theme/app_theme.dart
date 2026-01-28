@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   // Modern color palette with new blue
   static const _primaryBlue = Color.fromARGB(255, 128, 205, 244); // New blue color
-  static const _secondaryBlue = Color.fromARGB(255, 128, 205, 244); // Slightly darker blue for gradients
+  static const _secondaryBlue = Color.fromARGB(255, 65, 150, 200); // Darker blue for buttons
   static const _lightBlue = Color.fromARGB(255, 128, 205, 244); // Lighter blue for gradients
   
   // Text colors
@@ -19,7 +19,7 @@ class AppTheme {
   );
   
   static const accentGradient = LinearGradient(
-    colors: [Color.fromARGB(255, 126, 204, 243), _primaryBlue],
+    colors: [Color.fromARGB(255, 126, 204, 243), _secondaryBlue],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -122,8 +122,8 @@ class AppTheme {
       splashFactory: InkRipple.splashFactory,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: 2,
-          backgroundColor: _primaryBlue,
+          elevation: 3, // Increased elevation for better clickability
+          backgroundColor: _secondaryBlue, // Using darker blue for buttons
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -133,13 +133,13 @@ class AppTheme {
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
-          shadowColor: _primaryBlue.withOpacity(0.4),
+          shadowColor: _secondaryBlue.withOpacity(0.5), // Increased opacity for better shadow
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: _primaryBlue,
-          side: BorderSide(color: _primaryBlue, width: 1.5),
+          foregroundColor: _secondaryBlue, // Using darker blue for buttons
+          side: BorderSide(color: _secondaryBlue, width: 1.5), // Using darker blue for buttons
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -151,7 +151,7 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: _primaryBlue,
+        backgroundColor: _secondaryBlue, // Using darker blue for buttons
         foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -259,8 +259,8 @@ class AppTheme {
       splashFactory: InkRipple.splashFactory,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: 2,
-          backgroundColor: _primaryBlue,
+          elevation: 3, // Increased elevation for better clickability
+          backgroundColor: _secondaryBlue, // Using darker blue for buttons
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -270,13 +270,13 @@ class AppTheme {
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
-          shadowColor: _primaryBlue.withOpacity(0.4),
+          shadowColor: _secondaryBlue.withOpacity(0.5), // Increased opacity for better shadow
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: _primaryBlue,
-          side: BorderSide(color: _primaryBlue, width: 1.5),
+          foregroundColor: _secondaryBlue, // Using darker blue for buttons
+          side: BorderSide(color: _secondaryBlue, width: 1.5), // Using darker blue for buttons
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -288,7 +288,7 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: _primaryBlue,
+        backgroundColor: _secondaryBlue, // Using darker blue for buttons
         foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
