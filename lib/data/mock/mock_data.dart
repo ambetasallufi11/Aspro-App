@@ -4,6 +4,7 @@ import '../../models/order.dart';
 import '../../models/user_profile.dart';
 import '../../models/payment_method.dart';
 import '../../models/transaction.dart';
+import '../../models/promo_code.dart';
 
 class MockData {
   static const user = UserProfile(
@@ -164,6 +165,38 @@ class MockData {
       id: 'pm_2',
       type: PaymentMethodType.paypal,
       email: 'maya@aspro.app',
+    ),
+  ];
+  
+  // Mock promo codes
+  static final promoCodes = [
+    PromoCode(
+      id: 'p1',
+      code: 'WELCOME10',
+      merchantId: 'l1', // FreshFold Laundry Co.
+      type: PromoCodeType.percentage,
+      value: 10.0, // 10% off
+      description: 'Welcome discount for new customers',
+      expirationDate: DateTime.now().add(const Duration(days: 30)),
+      usageLimit: 1,
+    ),
+    PromoCode(
+      id: 'p2',
+      code: 'WEEKLY20',
+      merchantId: 'l1', // FreshFold Laundry Co.
+      type: PromoCodeType.percentage,
+      value: 20.0, // 20% off
+      description: 'Weekly discount for recurring customers',
+      isForRecurringCustomers: true,
+    ),
+    PromoCode(
+      id: 'p3',
+      code: 'SUMMER5',
+      merchantId: 'l2', // Sunrise Suds
+      type: PromoCodeType.fixedAmount,
+      value: 5.0, // $5 off
+      description: 'Summer promotion',
+      expirationDate: DateTime.now().add(const Duration(days: 90)),
     ),
   ];
   
