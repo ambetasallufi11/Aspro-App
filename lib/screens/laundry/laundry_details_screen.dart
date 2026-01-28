@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../models/laundry.dart';
+import '../../providers/chat_provider.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/primary_button.dart';
 
@@ -113,9 +115,34 @@ class LaundryDetailsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 24),
-          PrimaryButton(
-            label: 'Book Pickup',
-            onPressed: () => context.push('/booking'),
+          Row(
+            children: [
+              Expanded(
+                child: PrimaryButton(
+                  label: 'Book Pickup',
+                  onPressed: () => context.push('/booking'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.chat_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  onPressed: () {
+                    // Create a conversation with this merchant and navigate to chat
+                    ref.read(chatProvider.notifier).createConversation(laundry);
+                    context.push('/chat');
+                  },
+                  tooltip: 'Chat with Merchant',
+                ),
+              ),
+            ],
           ),
         ],
       ),
