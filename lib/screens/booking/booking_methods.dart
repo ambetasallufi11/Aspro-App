@@ -99,7 +99,7 @@ Future<void> confirmBooking({
       address: address,
       onViewOrders: () {
         context.pop(); // Close the modal
-        context.go('/orders');
+        context.push('/orders'); // Changed from go() to push() to preserve navigation stack
       },
       onDone: () {
         context.pop(); // Close the modal

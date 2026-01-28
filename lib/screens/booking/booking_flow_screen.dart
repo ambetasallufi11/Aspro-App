@@ -189,12 +189,31 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
 
-        return Scaffold(
-            appBar: AppBar(
+        return WillPopScope(
+            onWillPop: () async {
+                // If on first step, allow pop
+                // Otherwise, go back one step in the flow and prevent default pop
+                if (_currentStep == 0) {
+                    return true;
+                } else {
+                    _previousStep();
+                    return false;
+                }
+            },
+            child: Scaffold(
+                appBar: AppBar(
                 title: Text(l10n.t('Book Pickup')),
                 leading: IconButton(
                     icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.of(context).maybePop(),
+                    onPressed: () {
+                        // If on first step, pop the entire screen
+                        // Otherwise, go back one step in the flow
+                        if (_currentStep == 0) {
+                            Navigator.of(context).pop();
+                        } else {
+                            _previousStep();
+                        }
+                    },
                 ),
                 elevation: 0,
                 backgroundColor: Colors.white,
@@ -293,6 +312,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         ),
                     ),
                 ],
+                ),
             ),
         );
     }
