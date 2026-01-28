@@ -116,18 +116,15 @@ class LaundryDetailsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 24),
-          PrimaryButton(
-            label: context.l10n.t('Book Pickup'),
-            onPressed: () => context.push('/booking'),
           Row(
             children: [
               Expanded(
                 child: PrimaryButton(
-                  label: 'Book Pickup',
+                  label: context.l10n.t('Book Pickup'),
                   onPressed: () => context.push('/booking'),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
@@ -143,7 +140,7 @@ class LaundryDetailsScreen extends ConsumerWidget {
                     ref.read(chatProvider.notifier).createConversation(laundry);
                     context.push('/chat');
                   },
-                  tooltip: 'Chat with Merchant',
+                  tooltip: context.l10n.t('Chat with Merchant'),
                 ),
               ),
             ],
