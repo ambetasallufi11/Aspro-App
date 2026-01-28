@@ -30,8 +30,11 @@ class AuthState {
   }
 }
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState(users: MockData.allowedUsers));
+class AuthNotifier extends Notifier<AuthState> {
+  @override
+  AuthState build() {
+    return AuthState(users: MockData.allowedUsers);
+  }
 
   bool registerUser({
     required String name,
@@ -90,4 +93,4 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 final authProvider =
-    StateNotifierProvider<AuthNotifier, AuthState>((ref) => AuthNotifier());
+    NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
