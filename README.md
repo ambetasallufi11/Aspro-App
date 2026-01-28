@@ -1,86 +1,150 @@
- Aspro – Agile Project Management System
+# Aspro App - Laundry Service Application
 
-📌 Project Overview
+## 📱 Project Overview
 
-Aspro is an Agile project management application designed to support sprint planning, task tracking, and progress visualization using Agile and Scrum principles.
-This repository demonstrates the planning, organization, and execution of an Agile project using GitHub Issues, Projects, and Kanban boards.
+Aspro App is a comprehensive mobile application designed to connect users with laundry services. The app allows users to browse nearby laundry providers, book services, track orders, make payments, and communicate with service providers through an integrated chat system.
 
-The project focuses on Agile project management practices rather than full production deployment, making it suitable for academic evaluation and process demonstration.
+## ✨ Features
 
-⸻
+- **User Authentication**: Secure login and registration system
+- **Laundry Discovery**: Browse and search for nearby laundry services
+- **Booking System**: Schedule laundry services with date and time selection
+- **Order Management**: Track the status of current and past orders
+- **Payment Integration**: Multiple payment methods including wallet functionality
+- **Promo Codes**: Apply discount codes to orders
+- **In-app Chat**: Direct communication with laundry service providers
+- **User Profiles**: Manage personal information and preferences
+- **Multi-language Support**: Localization capabilities
 
-🎯 Project Objectives
-	•	Apply Agile and Scrum methodologies in a real project environment
-	•	Plan and manage work using sprints and a Kanban board
-	•	Create and prioritize a product backlog
-	•	Track progress through issues and project boards
-	•	Conduct sprint reviews and retrospectives
+## 🛠️ Technologies Used
 
-⸻
+- **Frontend**: Flutter (Dart)
+- **Backend**: Node.js
+- **Database**: SQL (PostgreSQL)
+- **State Management**: Provider pattern
+- **Authentication**: Token-based authentication
+- **UI/UX**: Custom theme with responsive design
 
-🧠 Agile Methodology
+## 📋 Prerequisites
 
-This project follows a Scrum-based Agile approach with the following structure:
-	•	3 Sprints
-	•	2 weeks per sprint
-	•	Continuous backlog refinement
-	•	Incremental delivery of features
+- Flutter SDK (latest version)
+- Dart SDK
+- Node.js and npm (for server)
+- PostgreSQL
+- Android Studio / Xcode (for mobile development)
 
-Agile Ceremonies
-	•	Sprint Planning: Start of each sprint
-	•	Daily Stand-ups: Daily progress tracking (documented updates)
-	•	Backlog Refinement: Mid-sprint
-	•	Sprint Review: End of each sprint
-	•	Sprint Retrospective: After each sprint
+## 🚀 Installation
 
-⸻
+### Client (Flutter App)
 
-🗂️ Sprint Breakdown
+1. Clone the repository:
+   ```
+   git clone https://github.com/ambetasallufi11/Aspro-App.git
+   cd aspro_app
+   ```
 
-🔹 Sprint 1 – Planning & Foundation
+2. Install dependencies:
+   ```
+   flutter pub get
+   ```
 
-Goal: Define requirements and set up the Agile management structure.
+3. Run the app:
+   ```
+   flutter run
+   ```
 
-Key Deliverables:
-	•	Prioritized product backlog
-	•	User stories for core features
-	•	GitHub Kanban board setup
-	•	Issue templates
-	•	Initial UI wireframes
+### Server
 
-⸻
+1. Navigate to the server directory:
+   ```
+   cd server
+   ```
 
-🔹 Sprint 2 – Core Feature Development
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-Goal: Develop and test core Agile management features.
+3. Set up environment variables:
+   - Create a `.env` file based on the provided example
+   - Configure database connection details
 
-Key Deliverables:
-	•	Task and sprint management functionality
-	•	Working Kanban workflow
-	•	Unit and integration testing
-	•	Refined backlog
+4. Initialize the database:
+   ```
+   psql -U <username> -d <database> -f schema.sql
+   psql -U <username> -d <database> -f seed.sql
+   ```
 
-⸻
+5. Start the server:
+   ```
+   npm start
+   ```
 
-🔹 Sprint 3 – Finalization & Delivery
+## 📁 Project Structure
 
-Goal: Finalize the MVP and complete documentation.
+```
+aspro_app/
+├── assets/                  # Images and static assets
+├── lib/
+│   ├── data/                # Data sources and repositories
+│   ├── l10n/                # Localization files
+│   ├── models/              # Data models
+│   ├── providers/           # State management
+│   ├── screens/             # UI screens
+│   ├── services/            # API and business logic services
+│   ├── theme/               # App theme and styling
+│   ├── utils/               # Utility functions
+│   ├── widgets/             # Reusable UI components
+│   └── main.dart            # App entry point
+├── server/
+│   ├── admin/               # Admin panel
+│   ├── src/                 # Server source code
+│   ├── schema.sql           # Database schema
+│   └── seed.sql             # Initial data
+└── [Platform-specific folders]
+```
 
-Key Deliverables:
-	•	Fully integrated Aspro MVP
-	•	Completed Agile board with sprint history
-	•	Final documentation
-	•	Sprint retrospective report
+## 🔧 Configuration
 
-⸻
+The app can be configured through various files:
 
-📋 Project Board
+- `lib/main.dart`: App initialization and global providers
+- `lib/theme/app_theme.dart`: UI theme configuration
+- `server/.env`: Server environment variables
 
-The Agile workflow is managed using GitHub Projects (Kanban board) with the following columns:
-	•	Backlog
-	•	Selected for Sprint
-	•	In Progress
-	•	In Review
-	•	Done
+## 🧪 Testing
 
-Each task is represented as a GitHub Issue and assigned to a sprint.
+Run tests with:
+
+```
+flutter test
+```
+
+## 📱 Supported Platforms
+
+- Android
+- iOS
+- Web
+- macOS
+- Linux
+- Windows
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 📞 Contact
+
+For any inquiries, please reach out to the project maintainers.
+
+---
+
+Developed with ❤️ by Ambeta Sallufi
