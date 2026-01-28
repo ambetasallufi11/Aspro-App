@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/booking/booking_flow_screen.dart';
+import '../screens/chat/chat_screen.dart';
+import '../screens/chat/conversations_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/laundry/laundry_details_screen.dart';
 import '../screens/orders/order_tracking_screen.dart';
@@ -83,6 +85,16 @@ class AppRouter {
       GoRoute(
         path: '/profile/privacy',
         builder: (context, state) => const PrivacySecurityScreen(),
+      ),
+      GoRoute(
+        path: '/conversations',
+        builder: (context, state) => const ConversationsScreen(),
+      ),
+      GoRoute(
+        path: '/chat',
+        builder: (context, state) => ChatScreen(
+          merchantId: state.uri.queryParameters['merchantId'],
+        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
