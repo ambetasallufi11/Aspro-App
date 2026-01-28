@@ -5,19 +5,21 @@ class TimeSelectionBottomSheet extends StatelessWidget {
     final List<String> timeSlots;
     final String selectedTime;
     final Function(String) onTimeSelected;
+    final ScrollController? scrollController;
 
     const TimeSelectionBottomSheet({
         super.key,
         required this.timeSlots,
         required this.selectedTime,
         required this.onTimeSelected,
+        this.scrollController,
     });
 
     @override
     Widget build(BuildContext context) {
         final theme = Theme.of(context);
         final primaryColor = theme.colorScheme.primary;
-        
+
         return Container(
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -43,30 +45,29 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                 left: 24,
                 right: 24,
             ),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: ListView(
+                controller: scrollController,
+                padding: EdgeInsets.zero,
                 children: [
                     // Handle bar at top with gradient
                     Center(
                         child: Container(
-                            width: 40,
-                            height: 4,
-                            margin: const EdgeInsets.only(bottom: 16),
+                            width: 56,
+                            height: 8,
+                            margin: const EdgeInsets.only(bottom: 20),
                             decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                        primaryColor.withOpacity(0.3),
-                                        primaryColor.withOpacity(0.5),
-                                    ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                ),
-                                borderRadius: BorderRadius.circular(2),
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(4),
+                                boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withOpacity(0.08),
+                                        blurRadius: 2,
+                                        offset: const Offset(0, 1),
+                                    ),
+                                ],
                             ),
                         ),
                     ),
-                    
                     // Title with gradient underline
                     Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,9 +91,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                             ),
                         ],
                     ),
-                    
                     const SizedBox(height: 24),
-                    
                     // Time slots grid
                     GridView.builder(
                         shrinkWrap: true,
@@ -107,7 +106,6 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                         itemBuilder: (context, index) {
                             final timeSlot = timeSlots[index];
                             final isSelected = timeSlot == selectedTime;
-                            
                             return AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
                                 decoration: BoxDecoration(
@@ -119,14 +117,14 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                                         width: isSelected ? 0 : 1,
                                     ),
                                     boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                                color: primaryColor.withOpacity(0.3),
-                                                blurRadius: 10,
-                                                offset: const Offset(0, 3),
-                                            ),
-                                        ]
-                                        : null,
+                                            ? [
+                                                    BoxShadow(
+                                                        color: primaryColor.withOpacity(0.3),
+                                                        blurRadius: 10,
+                                                        offset: const Offset(0, 3),
+                                                    ),
+                                                ]
+                                            : null,
                                 ),
                                 child: Material(
                                     color: Colors.transparent,

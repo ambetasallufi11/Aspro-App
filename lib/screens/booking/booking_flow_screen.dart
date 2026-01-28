@@ -384,28 +384,35 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     void _showTimeSelectionModal(BuildContext context, bool isPickup) {
-        // Show a modern bottom sheet with time options
-        showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => TimeSelectionBottomSheet(
-                timeSlots: _timeSlots,
-                selectedTime: isPickup ? _pickupTimeSlot : _deliveryTimeSlot,
-                onTimeSelected: (time) {
-                    setState(() {
-                        if (isPickup) {
-                            _pickupTimeSlot = time;
-                            _updatePickupSlots();
-                        } else {
-                            _deliveryTimeSlot = time;
-                            _updateDeliverySlots();
-                        }
-                    });
-                    Navigator.pop(context);
-                },
-            ),
-        );
+                // Show a modern draggable bottom sheet with time options
+                showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => DraggableScrollableSheet(
+                        initialChildSize: 0.45,
+                        minChildSize: 0.3,
+                        maxChildSize: 0.85,
+                        expand: false,
+                        builder: (context, scrollController) => TimeSelectionBottomSheet(
+                            timeSlots: _timeSlots,
+                            selectedTime: isPickup ? _pickupTimeSlot : _deliveryTimeSlot,
+                            onTimeSelected: (time) {
+                                setState(() {
+                                    if (isPickup) {
+                                        _pickupTimeSlot = time;
+                                        _updatePickupSlots();
+                                    } else {
+                                        _deliveryTimeSlot = time;
+                                        _updateDeliverySlots();
+                                    }
+                                });
+                                Navigator.pop(context);
+                            },
+                            scrollController: scrollController,
+                        ),
+                    ),
+                );
     }
     
     Widget _buildPickupTimeStep() {
