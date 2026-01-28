@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class TimeSelectionBottomSheet extends StatelessWidget {
@@ -72,11 +73,11 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                     Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                            Text(
-                                'Select Time',
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: theme.textTheme.titleLarge?.color,
+                                Text(
+                                    context.l10n.t('Select Time'),
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: theme.textTheme.titleLarge?.color,
                                     letterSpacing: -0.5,
                                 ),
                             ),

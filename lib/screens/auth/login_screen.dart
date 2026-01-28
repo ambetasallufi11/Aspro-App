@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/primary_button.dart';
 
@@ -34,7 +35,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      _showMessage('Please enter your email and password.');
+      _showMessage(context.l10n.t('Please enter your email and password.'));
       return;
     }
 
@@ -44,7 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (isValid) {
       context.go('/home');
     } else {
-      _showMessage('Wrong email or password. Please try again.');
+      _showMessage(context.l10n.t('Wrong email or password. Please try again.'));
     }
   }
 
@@ -70,14 +71,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Welcome back',
+                context.l10n.t('Welcome back'),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Sign in to continue managing your laundry.',
+                context.l10n.t('Sign in to continue managing your laundry.'),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurface.withOpacity(0.7),
                     ),
@@ -85,18 +86,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 32),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined),
+                decoration: InputDecoration(
+                  labelText: context.l10n.t('Email'),
+                  prefixIcon: const Icon(Icons.email_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock_outline),
+                decoration: InputDecoration(
+                  labelText: context.l10n.t('Password'),
+                  prefixIcon: const Icon(Icons.lock_outline),
                 ),
               ),
               const SizedBox(height: 12),
@@ -104,12 +105,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {},
-                  child: const Text('Forgot password?'),
+                  child: Text(context.l10n.t('Forgot password?')),
                 ),
               ),
               const SizedBox(height: 12),
               PrimaryButton(
-                label: 'Sign in',
+                label: context.l10n.t('Sign in'),
                 onPressed: _handleLogin,
               ),
               const Spacer(),
@@ -117,10 +118,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 alignment: WrapAlignment.center,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  const Text('New here? '),
+                  Text('${context.l10n.t('New here?')} '),
                   TextButton(
                     onPressed: () => context.push('/auth/register'),
-                    child: const Text('Create account'),
+                    child: Text(context.l10n.t('Create account')),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       minimumSize: Size.zero,

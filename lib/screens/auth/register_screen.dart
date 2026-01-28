@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/primary_button.dart';
 
@@ -37,7 +38,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final password = _passwordController.text.trim();
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      _showMessage('Please fill out all fields.');
+      _showMessage(context.l10n.t('Please fill out all fields.'));
       return;
     }
 
@@ -48,10 +49,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         );
 
     if (created) {
-      _showMessage('Account created. You are now signed in.');
+      _showMessage(context.l10n.t('Account created. You are now signed in.'));
       context.go('/home');
     } else {
-      _showMessage('Email already exists. Please sign in.');
+      _showMessage(context.l10n.t('Email already exists. Please sign in.'));
     }
   }
 
@@ -72,14 +73,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Create account',
+                context.l10n.t('Create account'),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Join Aspro for fast, local laundry pickups.',
+                context.l10n.t('Join Aspro for fast, local laundry pickups.'),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurface.withOpacity(0.7),
                     ),
@@ -87,41 +88,41 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               const SizedBox(height: 24),
               TextField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Full name',
-                  prefixIcon: Icon(Icons.person_outline),
+                decoration: InputDecoration(
+                  labelText: context.l10n.t('Full name'),
+                  prefixIcon: const Icon(Icons.person_outline),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined),
+                decoration: InputDecoration(
+                  labelText: context.l10n.t('Email'),
+                  prefixIcon: const Icon(Icons.email_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock_outline),
+                decoration: InputDecoration(
+                  labelText: context.l10n.t('Password'),
+                  prefixIcon: const Icon(Icons.lock_outline),
                 ),
               ),
               const SizedBox(height: 24),
               PrimaryButton(
-                label: 'Create account',
+                label: context.l10n.t('Create account'),
                 onPressed: _handleRegister,
               ),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Already have an account? '),
+                  Text('${context.l10n.t('Already have an account?')} '),
                   TextButton(
                     onPressed: () => context.go('/auth/login'),
-                    child: const Text('Sign in'),
+                    child: Text(context.l10n.t('Sign in')),
                   ),
                 ],
               ),

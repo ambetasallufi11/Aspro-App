@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../models/laundry.dart';
 
@@ -163,7 +164,8 @@ class LaundryCard extends StatelessWidget {
                   runSpacing: 8,
                   children: laundry.services
                       .take(3)
-                      .map((service) => _buildServiceChip(service, context))
+                      .map((service) =>
+                          _buildServiceChip(context.l10n.t(service), context))
                       .toList(),
                 ),
                 
@@ -193,7 +195,7 @@ class LaundryCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'ETA: ${laundry.eta}',
+                        '${context.l10n.t('ETA:')} ${context.l10n.t(laundry.eta)}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: primaryColor,

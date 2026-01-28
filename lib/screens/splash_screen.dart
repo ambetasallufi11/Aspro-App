@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../l10n/app_localizations.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -77,9 +79,9 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Aspro',
-                    style: TextStyle(
+                  Text(
+                    context.l10n.t('Aspro'),
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -87,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Local Wash & Delivery Service',
+                    context.l10n.t('Local Wash & Delivery Service'),
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withOpacity(0.9),

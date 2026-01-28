@@ -17,6 +17,7 @@ import '../screens/profile/app_settings_screen.dart';
 import '../screens/profile/privacy_security_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/splash_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -99,7 +100,7 @@ class AppRouter {
     errorBuilder: (context, state) => Scaffold(
       body: Center(
         child: Text(
-          'Route not found',
+          context.l10n.t('Route not found'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),

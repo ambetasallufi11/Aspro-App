@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/service.dart';
 
 class OrderSummary extends StatelessWidget {
@@ -50,7 +51,7 @@ class OrderSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                     Text(
-                        'Order Summary',
+                        context.l10n.t('Order summary'),
                         style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: primaryColor,
@@ -61,7 +62,7 @@ class OrderSummary extends StatelessWidget {
                     
                     // Services section
                     Text(
-                        'Selected Services',
+                        context.l10n.t('Selected Services'),
                         style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                         ),
@@ -96,7 +97,7 @@ class OrderSummary extends StatelessWidget {
                                             const SizedBox(width: 8),
                                             
                                             Text(
-                                                service.name,
+                                                context.l10n.t(service.name),
                                                 style: theme.textTheme.bodyLarge,
                                             ),
                                         ],
@@ -127,7 +128,7 @@ class OrderSummary extends StatelessWidget {
                             const SizedBox(width: 8),
                             
                             Text(
-                                'Schedule',
+                                context.l10n.t('Schedule'),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
                                 ),
@@ -142,7 +143,7 @@ class OrderSummary extends StatelessWidget {
                         child: Row(
                             children: [
                                 Text(
-                                    'Pickup:',
+                                    context.l10n.t('Pickup'),
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                         color: Colors.grey.shade700,
                                     ),
@@ -165,7 +166,7 @@ class OrderSummary extends StatelessWidget {
                         child: Row(
                             children: [
                                 Text(
-                                    'Delivery:',
+                                    context.l10n.t('Delivery'),
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                         color: Colors.grey.shade700,
                                     ),
@@ -202,7 +203,7 @@ class OrderSummary extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                         Text(
-                                            'Address',
+                                            context.l10n.t('Address'),
                                             style: theme.textTheme.titleMedium?.copyWith(
                                                 fontWeight: FontWeight.w600,
                                             ),
@@ -227,7 +228,7 @@ class OrderSummary extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                             Text(
-                                'Total',
+                                context.l10n.t('Total'),
                                 style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
                                 ),

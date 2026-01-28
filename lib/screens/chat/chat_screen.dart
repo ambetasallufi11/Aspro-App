@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/chat_message.dart';
 import '../../providers/chat_provider.dart';
 import 'widgets/chat_input.dart';
@@ -94,19 +95,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       appBar: AppBar(
         title: activeConversation != null
             ? Text(activeConversation.merchantName)
-            : const Text('Chat'),
+            : Text(context.l10n.t('Chat')),
         elevation: 1,
       ),
       body: activeConversation == null
-          ? const Center(
-              child: Text('No active conversation. Please select a merchant to chat with.'),
+          ? Center(
+              child: Text(
+                context.l10n.t('No active conversation. Please select a merchant to chat with.'),
+              ),
             )
           : Column(
               children: [
                 Expanded(
                   child: messages.isEmpty
-                      ? const Center(
-                          child: Text('No messages yet. Start the conversation!'),
+                      ? Center(
+                          child: Text(
+                            context.l10n.t('No messages yet. Start the conversation!'),
+                          ),
                         )
                       : _buildMessageList(messages),
                 ),
@@ -125,7 +130,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final Map<String, List<ChatMessage>> groupedMessages = {};
     
     for (final message in messages) {
-      final date = DateFormat('MMMM d, yyyy').format(message.timestamp);
+      final date = DateFormat(
+        'MMMM d, yyyy',
+        Localizations.localeOf(context).languageCode,
+      ).format(message.timestamp);
       if (!groupedMessages.containsKey(date)) {
         groupedMessages[date] = [];
       }
@@ -133,9 +141,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
 
     final sortedDates = groupedMessages.keys.toList()
-      ..sort((a, b) => DateFormat('MMMM d, yyyy')
+      ..sort((a, b) => DateFormat(
+            'MMMM d, yyyy',
+            Localizations.localeOf(context).languageCode,
+          )
           .parse(a)
-          .compareTo(DateFormat('MMMM d, yyyy').parse(b)));
+          .compareTo(DateFormat(
+            'MMMM d, yyyy',
+            Localizations.localeOf(context).languageCode,
+          ).parse(b)));
 
     return ListView.builder(
       controller: _scrollController,

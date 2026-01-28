@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../models/chat_message.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -137,7 +138,7 @@ class MessageBubble extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Special Request',
+                    context.l10n.t('Special Request'),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: isFromUser 

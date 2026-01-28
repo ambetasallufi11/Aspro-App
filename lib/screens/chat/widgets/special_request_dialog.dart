@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/chat_provider.dart';
@@ -54,13 +56,13 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Special Requests',
+              context.l10n.t('Special Requests'),
               style: theme.textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Select a request or create your own',
+              context.l10n.t('Select a request or create your own'),
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -71,7 +73,7 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
                   TextField(
                     controller: _customRequestController,
                     decoration: InputDecoration(
-                      hintText: 'Enter your special request...',
+                      hintText: context.l10n.t('Enter your special request...'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -91,12 +93,12 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
                             _isCustomRequest = false;
                           });
                         },
-                        child: const Text('Cancel'),
+                        child: Text(context.l10n.t('Cancel')),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: _submitCustomRequest,
-                        child: const Text('Submit'),
+                        child: Text(context.l10n.t('Submit')),
                       ),
                     ],
                   ),
@@ -128,7 +130,7 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
                         _isCustomRequest = true;
                       });
                     },
-                    child: const Text('Create Custom Request'),
+                    child: Text(context.l10n.t('Create Custom Request')),
                   ),
                 ],
               ),

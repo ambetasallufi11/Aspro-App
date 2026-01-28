@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/order.dart';
 
 class OrderCard extends StatelessWidget {
@@ -61,7 +62,7 @@ class OrderCard extends StatelessWidget {
                           ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 4),
-                    Text(_statusLabel),
+                    Text(context.l10n.t(_statusLabel)),
                   ],
                 ),
               ),

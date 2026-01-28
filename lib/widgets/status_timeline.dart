@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/order.dart';
 
 class StatusTimeline extends StatelessWidget {
@@ -27,11 +28,11 @@ class StatusTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final steps = [
-      'Pending',
-      'Picked up',
-      'Washing',
-      'Ready',
-      'Delivered',
+      context.l10n.t('Pending'),
+      context.l10n.t('Picked up'),
+      context.l10n.t('Washing'),
+      context.l10n.t('Ready'),
+      context.l10n.t('Delivered'),
     ];
 
     // Special case for cancelled orders

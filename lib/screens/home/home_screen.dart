@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../providers/mock_providers.dart';
 import '../../widgets/laundry_card.dart';
 import '../../theme/app_theme.dart';
@@ -57,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(64),
         child: AppBar(
-          title: const Text('Nearby Laundries'),
+          title: Text(context.l10n.t('Nearby Laundries')),
           centerTitle: true,
           toolbarHeight: 64,
           backgroundColor: Colors.transparent,
@@ -298,7 +299,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Top picks near you',
+                                  context.l10n.t('Top picks near you'),
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: -0.5,
@@ -376,9 +377,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                     color: Colors.white,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Book Pickup',
-                    style: TextStyle(
+                  Text(
+                    context.l10n.t('Book Pickup'),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),

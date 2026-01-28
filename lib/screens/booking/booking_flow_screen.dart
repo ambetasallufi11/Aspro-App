@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../providers/locale_provider.dart';
 import '../../data/mock/mock_data.dart';
 import '../../models/payment_method.dart';
 import '../../providers/mock_providers.dart';
@@ -53,13 +55,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         '6:00 - 8:00 PM',
     ];
     
-    final List<String> _steps = [
-        'Services',
-        'Pickup',
-        'Delivery',
-        'Address',
+    List<String> _steps(BuildContext context) => [
+        context.l10n.t('Services'),
+        context.l10n.t('Pickup'),
+        context.l10n.t('Delivery'),
+        context.l10n.t('Address'),
         'Payment',
-        'Summary',
+        context.l10n.t('Summary'),
     ];
     
     // For backward compatibility
@@ -67,12 +69,14 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     final List<TimeSlot> _deliverySlots = [];
     
     String get _pickupSlotText {
-        final formatter = DateFormat('E, MMM d');
+        final localeCode = ref.read(localeProvider)?.languageCode ?? 'en';
+        final formatter = DateFormat('E, MMM d', localeCode);
         return '${formatter.format(_pickupDate)} • $_pickupTimeSlot';
     }
     
     String get _deliverySlotText {
-        final formatter = DateFormat('E, MMM d');
+        final localeCode = ref.read(localeProvider)?.languageCode ?? 'en';
+        final formatter = DateFormat('E, MMM d', localeCode);
         return '${formatter.format(_deliveryDate)} • $_deliveryTimeSlot';
     }
 
@@ -98,19 +102,20 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     void _updatePickupSlots() {
         final now = DateTime.now();
         final tomorrow = DateTime(now.year, now.month, now.day + 1);
+        final localeCode = ref.read(localeProvider)?.languageCode ?? 'en';
         
         String dayLabel;
         if (_pickupDate.year == now.year && 
             _pickupDate.month == now.month && 
             _pickupDate.day == now.day) {
-            dayLabel = 'Today';
+            dayLabel = AppLocalizations(Locale(localeCode)).t('Today');
         } else if (_pickupDate.year == tomorrow.year && 
                    _pickupDate.month == tomorrow.month && 
                    _pickupDate.day == tomorrow.day) {
-            dayLabel = 'Tomorrow';
+            dayLabel = AppLocalizations(Locale(localeCode)).t('Tomorrow');
         } else {
             // Format as day of week
-            dayLabel = DateFormat('EEEE').format(_pickupDate);
+            dayLabel = DateFormat('EEEE', localeCode).format(_pickupDate);
         }
         
         _pickupSlots.clear();
@@ -129,24 +134,25 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         final now = DateTime.now();
         final tomorrow = DateTime(now.year, now.month, now.day + 1);
         final dayAfterTomorrow = DateTime(now.year, now.month, now.day + 2);
+        final localeCode = ref.read(localeProvider)?.languageCode ?? 'en';
         
         String dayLabel;
         if (_deliveryDate.year == now.year && 
             _deliveryDate.month == now.month && 
             _deliveryDate.day == now.day) {
-            dayLabel = 'Today';
+            dayLabel = AppLocalizations(Locale(localeCode)).t('Today');
         } else if (_deliveryDate.year == tomorrow.year && 
                    _deliveryDate.month == tomorrow.month && 
                    _deliveryDate.day == tomorrow.day) {
-            dayLabel = 'Tomorrow';
+            dayLabel = AppLocalizations(Locale(localeCode)).t('Tomorrow');
         } else if (_deliveryDate.year == dayAfterTomorrow.year && 
                    _deliveryDate.month == dayAfterTomorrow.month && 
                    _deliveryDate.day == dayAfterTomorrow.day &&
                    dayAfterTomorrow.weekday == DateTime.friday) {
-            dayLabel = 'Friday';
+            dayLabel = DateFormat('EEEE', localeCode).format(_deliveryDate);
         } else {
             // Format as day of week
-            dayLabel = DateFormat('EEEE').format(_deliveryDate);
+            dayLabel = DateFormat('EEEE', localeCode).format(_deliveryDate);
         }
         
         _deliverySlots.clear();
@@ -179,12 +185,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         final authState = ref.watch(authProvider);
         final user = ref.watch(userProvider);
         final paymentMethods = ref.watch(paymentMethodsProvider);
+        final l10n = context.l10n;
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
 
         return Scaffold(
             appBar: AppBar(
-                title: const Text('Book Pickup'),
+                title: Text(l10n.t('Book Pickup')),
                 leading: IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.of(context).maybePop(),
@@ -199,7 +206,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: BookingStepIndicator(
                             currentStep: _currentStep,
-                            steps: _steps,
+                            steps: _steps(context),
                         ),
                     ),
                     
@@ -233,7 +240,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                     Expanded(
                                         flex: 1,
                                         child: EnhancedButton(
-                                            label: 'Back',
+                                            label: l10n.t('Back'),
                                             onPressed: _previousStep,
                                             isOutlined: true,
                                             icon: Icons.arrow_back,
@@ -266,7 +273,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                                         ),
                                                         const SizedBox(width: 12),
                                                         Text(
-                                                            'Processing...',
+                                                            l10n.t('Processing...'),
                                                             style: TextStyle(
                                                                 color: primaryColor,
                                                                 fontWeight: FontWeight.w600,
@@ -316,7 +323,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
-                        'Select Services',
+                        context.l10n.t('Select Services'),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                         ),
@@ -324,7 +331,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 ),
                 
                 Text(
-                    'Choose the services you need for your laundry',
+                    context.l10n.t('Choose the services you need for your laundry'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey.shade700,
                     ),
@@ -437,7 +444,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                         Text(
-                            'Select Pickup Time',
+                            context.l10n.t('Select Pickup Time'),
                             style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                             ),
@@ -446,7 +453,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         ElevatedButton.icon(
                             onPressed: () => _showPickupDatePicker(context),
                             icon: const Icon(Icons.calendar_today, size: 18),
-                            label: const Text('Select Date'),
+                            label: Text(context.l10n.t('Select Date')),
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
                                 foregroundColor: Colors.white,
@@ -490,7 +497,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                        'Date',
+                                        context.l10n.t('Date'),
                                         style: theme.textTheme.titleSmall?.copyWith(
                                             fontWeight: FontWeight.w600,
                                         ),
@@ -501,7 +508,10 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                             Padding(
                                 padding: const EdgeInsets.only(left: 28, top: 4, bottom: 16),
                                 child: Text(
-                                    DateFormat('EEEE, MMMM d, yyyy').format(_pickupDate),
+                                    DateFormat(
+                                      'EEEE, MMMM d, yyyy',
+                                      Localizations.localeOf(context).languageCode,
+                                    ).format(_pickupDate),
                                     style: theme.textTheme.bodyMedium,
                                 ),
                             ),
@@ -515,7 +525,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                        'Time',
+                                        context.l10n.t('Time'),
                                         style: theme.textTheme.titleSmall?.copyWith(
                                             fontWeight: FontWeight.w600,
                                         ),
@@ -535,7 +545,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                         TextButton(
                                             onPressed: () => _showTimeSelectionModal(context, true),
                                             child: Text(
-                                                'Change',
+                                                context.l10n.t('Change'),
                                                 style: TextStyle(
                                                     color: primaryColor,
                                                     fontWeight: FontWeight.w600,
@@ -678,7 +688,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                         Text(
-                            'Select Delivery Time',
+                            context.l10n.t('Select Delivery Time'),
                             style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                             ),
@@ -687,7 +697,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         ElevatedButton.icon(
                             onPressed: () => _showDeliveryDatePicker(context),
                             icon: const Icon(Icons.calendar_today, size: 18),
-                            label: const Text('Select Date'),
+                            label: Text(context.l10n.t('Select Date')),
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
                                 foregroundColor: Colors.white,
@@ -731,7 +741,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                        'Date',
+                                        context.l10n.t('Date'),
                                         style: theme.textTheme.titleSmall?.copyWith(
                                             fontWeight: FontWeight.w600,
                                         ),
@@ -742,7 +752,10 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                             Padding(
                                 padding: const EdgeInsets.only(left: 28, top: 4, bottom: 16),
                                 child: Text(
-                                    DateFormat('EEEE, MMMM d, yyyy').format(_deliveryDate),
+                                    DateFormat(
+                                      'EEEE, MMMM d, yyyy',
+                                      Localizations.localeOf(context).languageCode,
+                                    ).format(_deliveryDate),
                                     style: theme.textTheme.bodyMedium,
                                 ),
                             ),
@@ -756,7 +769,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                        'Time',
+                                        context.l10n.t('Time'),
                                         style: theme.textTheme.titleSmall?.copyWith(
                                             fontWeight: FontWeight.w600,
                                         ),
@@ -776,7 +789,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                         TextButton(
                                             onPressed: () => _showTimeSelectionModal(context, false),
                                             child: Text(
-                                                'Change',
+                                                context.l10n.t('Change'),
                                                 style: TextStyle(
                                                     color: primaryColor,
                                                     fontWeight: FontWeight.w600,
