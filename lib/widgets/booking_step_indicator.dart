@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class BookingStepIndicator extends StatelessWidget {
     final int currentStep;
@@ -13,7 +14,7 @@ class BookingStepIndicator extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         final theme = Theme.of(context);
-        final primaryColor = const Color(0xFF2196F3); // Material Blue 500
+        final primaryColor = theme.colorScheme.primary;
 
         return Container(
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -37,11 +38,14 @@ class BookingStepIndicator extends StatelessWidget {
                                                 ),
                                             ),
                                         Container(
-                                            width: 28,
-                                            height: 28,
+                                            width: 32,
+                                            height: 32,
                                             decoration: BoxDecoration(
+                                                gradient: isActive 
+                                                    ? AppTheme.primaryGradient
+                                                    : null,
                                                 color: isActive 
-                                                    ? primaryColor 
+                                                    ? null 
                                                     : Colors.grey.shade200,
                                                 shape: BoxShape.circle,
                                                 border: isActive 
@@ -51,8 +55,8 @@ class BookingStepIndicator extends StatelessWidget {
                                                     ? [
                                                         BoxShadow(
                                                             color: primaryColor.withOpacity(0.3),
-                                                            blurRadius: 8,
-                                                            offset: const Offset(0, 2),
+                                                            blurRadius: 10,
+                                                            offset: const Offset(0, 3),
                                                         )
                                                     ] 
                                                     : null,
@@ -79,10 +83,16 @@ class BookingStepIndicator extends StatelessWidget {
                                         if (index < steps.length - 1)
                                             Expanded(
                                                 child: Container(
-                                                    height: 2,
-                                                    color: isActive && index < currentStep
-                                                        ? primaryColor 
-                                                        : Colors.grey.shade300,
+                                                    height: 3,
+                                                    decoration: BoxDecoration(
+                                                        gradient: isActive && index < currentStep
+                                                            ? AppTheme.primaryGradient
+                                                            : null,
+                                                        color: isActive && index < currentStep
+                                                            ? null
+                                                            : Colors.grey.shade300,
+                                                        borderRadius: BorderRadius.circular(1.5),
+                                                    ),
                                                 ),
                                             ),
                                     ],
@@ -97,22 +107,27 @@ class BookingStepIndicator extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: List.generate(steps.length, (index) {
                             final isActive = index <= currentStep;
+                            final isCurrent = index == currentStep;
                             
                             return Expanded(
-                                child: Text(
-                                    steps[index],
-                                    textAlign: index == 0 
-                                        ? TextAlign.start 
-                                        : (index == steps.length - 1 
-                                            ? TextAlign.end 
-                                            : TextAlign.center),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                child: AnimatedDefaultTextStyle(
+                                    duration: const Duration(milliseconds: 300),
+                                    style: theme.textTheme.bodyMedium!.copyWith(
                                         color: isActive 
                                             ? primaryColor 
                                             : Colors.grey.shade600,
                                         fontWeight: isActive 
                                             ? FontWeight.w600 
                                             : FontWeight.normal,
+                                        fontSize: isCurrent ? 13 : 12,
+                                    ),
+                                    child: Text(
+                                        steps[index],
+                                        textAlign: index == 0 
+                                            ? TextAlign.start 
+                                            : (index == steps.length - 1 
+                                                ? TextAlign.end 
+                                                : TextAlign.center),
                                     ),
                                 ),
                             );

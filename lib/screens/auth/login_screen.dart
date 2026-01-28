@@ -113,13 +113,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onPressed: _handleLogin,
               ),
               const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   const Text('New here? '),
                   TextButton(
                     onPressed: () => context.push('/auth/register'),
                     child: const Text('Create account'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                   ),
                 ],
               ),

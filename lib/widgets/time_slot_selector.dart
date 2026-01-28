@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../theme/app_theme.dart';
 
 class TimeSlot {
     final String id;
@@ -88,8 +89,8 @@ class _TimeSlotSelectorState extends State<TimeSlotSelector> {
 
     @override
     Widget build(BuildContext context) {
-        final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final theme = Theme.of(context);
+        final primaryColor = theme.colorScheme.primary;
 
         return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,30 +108,89 @@ class _TimeSlotSelectorState extends State<TimeSlotSelector> {
                             ),
                         ),
                         
-                        // Calendar button
+                        // Calendar button with gradient background
                         if (widget.onDateSelected != null)
                             Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
-                                child: IconButton(
-                                    icon: const Icon(Icons.calendar_today),
-                                    onPressed: () => _showDatePicker(context),
-                                    tooltip: 'Select Date',
-                                    color: primaryColor,
+                                child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                        onTap: () => _showDatePicker(context),
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Ink(
+                                            decoration: BoxDecoration(
+                                                gradient: AppTheme.primaryGradient,
+                                                borderRadius: BorderRadius.circular(12),
+                                                boxShadow: [
+                                                    BoxShadow(
+                                                        color: primaryColor.withOpacity(0.2),
+                                                        blurRadius: 8,
+                                                        offset: const Offset(0, 2),
+                                                    ),
+                                                ],
+                                            ),
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                            child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                    const Icon(
+                                                        Icons.calendar_today,
+                                                        color: Colors.white,
+                                                        size: 16,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    const Text(
+                                                        'Select Date',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.w600,
+                                                            fontSize: 12,
+                                                        ),
+                                                    ),
+                                                ],
+                                            ),
+                                        ),
+                                    ),
                                 ),
                             ),
                     ],
                 ),
                 
-                // Display selected date if available
+                // Display selected date if available with gradient underline
                 if (widget.selectedDate != null)
                     Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
-                            'Selected Date: ${DateFormat('EEEE, MMMM d').format(widget.selectedDate!)}',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                                color: primaryColor,
-                                fontWeight: FontWeight.w500,
-                            ),
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                Row(
+                                    children: [
+                                        Icon(
+                                            Icons.event,
+                                            size: 18,
+                                            color: primaryColor,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                            DateFormat('EEEE, MMMM d').format(widget.selectedDate!),
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                                color: theme.textTheme.titleMedium?.color,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15,
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                    height: 2,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                        gradient: AppTheme.primaryGradient,
+                                        borderRadius: BorderRadius.circular(1),
+                                    ),
+                                ),
+                            ],
                         ),
                     ),
                 
@@ -144,43 +204,60 @@ class _TimeSlotSelectorState extends State<TimeSlotSelector> {
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                                color: isSelected ? primaryColor.withOpacity(0.05) : Colors.white,
-                                borderRadius: BorderRadius.circular(16),
+                                gradient: isSelected 
+                                    ? LinearGradient(
+                                        colors: [
+                                            primaryColor.withOpacity(0.08),
+                                            primaryColor.withOpacity(0.03),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                    ) 
+                                    : null,
+                                color: isSelected ? null : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                     color: isSelected ? primaryColor : Colors.grey.shade200,
                                     width: isSelected ? 2 : 1,
                                 ),
                                 boxShadow: [
                                     BoxShadow(
-                                        color: Colors.black.withOpacity(0.03),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
+                                        color: isSelected 
+                                            ? primaryColor.withOpacity(0.1) 
+                                            : Colors.black.withOpacity(0.03),
+                                        blurRadius: isSelected ? 10 : 6,
+                                        offset: const Offset(0, 3),
                                     ),
                                 ],
                             ),
                             child: Row(
                                 children: [
-                                    // Radio indicator
+                                    // Radio indicator with gradient
                                     Container(
-                                        width: 20,
-                                        height: 20,
+                                        width: 24,
+                                        height: 24,
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: isSelected ? primaryColor : Colors.white,
+                                            gradient: isSelected ? AppTheme.primaryGradient : null,
+                                            color: isSelected ? null : Colors.white,
                                             border: Border.all(
-                                                color: isSelected ? primaryColor : Colors.grey.shade400,
+                                                color: isSelected ? Colors.transparent : Colors.grey.shade400,
                                                 width: 2,
                                             ),
+                                            boxShadow: isSelected ? [
+                                                BoxShadow(
+                                                    color: primaryColor.withOpacity(0.3),
+                                                    blurRadius: 6,
+                                                    offset: const Offset(0, 2),
+                                                ),
+                                            ] : null,
                                         ),
                                         child: isSelected
-                                            ? Center(
-                                                child: Container(
-                                                    width: 8,
-                                                    height: 8,
-                                                    decoration: const BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: Colors.white,
-                                                    ),
+                                            ? const Center(
+                                                child: Icon(
+                                                    Icons.check,
+                                                    size: 14,
+                                                    color: Colors.white,
                                                 ),
                                             )
                                             : null,
@@ -213,12 +290,15 @@ class _TimeSlotSelectorState extends State<TimeSlotSelector> {
                                         ),
                                     ),
                                     
-                                    // Icon for selected
+                                    // Icon for selected with gradient effect
                                     if (isSelected)
-                                        Icon(
-                                            Icons.check_circle,
-                                            color: primaryColor,
-                                            size: 24,
+                                        ShaderMask(
+                                            shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+                                            child: const Icon(
+                                                Icons.check_circle,
+                                                color: Colors.white,
+                                                size: 28,
+                                            ),
                                         ),
                                 ],
                             ),
