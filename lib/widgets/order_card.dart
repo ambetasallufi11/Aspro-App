@@ -20,6 +20,8 @@ class OrderCard extends StatelessWidget {
         return 'Ready';
       case OrderStatus.delivered:
         return 'Delivered';
+      case OrderStatus.cancelled:
+        return 'Cancelled';
     }
   }
 

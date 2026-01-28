@@ -5,7 +5,10 @@ import 'dart:math' as math;
 import 'package:intl/intl.dart';
 
 import '../../data/mock/mock_data.dart';
+import '../../models/payment_method.dart';
 import '../../providers/mock_providers.dart';
+import '../../services/payment_service.dart';
+import 'booking_methods.dart';
 import '../../widgets/booking_step_indicator.dart';
 import '../../widgets/service_card.dart';
 import '../../widgets/time_slot_selector.dart';
@@ -15,6 +18,7 @@ import '../../widgets/order_summary.dart';
 import '../../widgets/enhanced_button.dart';
 import '../../widgets/booking_success_modal.dart';
 import '../../widgets/time_selection_bottom_sheet.dart';
+import '../../widgets/payment_method_selector.dart';
 import '../../models/service.dart';
 
 class BookingFlowScreen extends ConsumerStatefulWidget {
@@ -32,6 +36,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     String _address = '128 Market Street, San Francisco, CA';
     bool _isLoading = false;
     late List<String> _addresses;
+    PaymentMethod? _selectedPaymentMethod;
     
     // Date selection
     late DateTime _pickupDate;
@@ -53,6 +58,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         'Pickup',
         'Delivery',
         'Address',
+        'Payment',
         'Summary',
     ];
     
@@ -156,7 +162,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
 
     void _nextStep() {
-        if (_currentStep < 4) {
+        if (_currentStep < 5) {
             setState(() => _currentStep += 1);
         }
     }
@@ -171,8 +177,10 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     Widget build(BuildContext context) {
         final services = ref.watch(servicesProvider);
         final authState = ref.watch(authProvider);
+        final user = ref.watch(userProvider);
+        final paymentMethods = ref.watch(paymentMethodsProvider);
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
-    final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
+        final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
 
         return Scaffold(
             appBar: AppBar(
@@ -269,9 +277,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                             ),
                                         )
                                         : EnhancedButton(
-                                            label: _currentStep == 4 ? 'Confirm Booking' : 'Continue',
-                                            onPressed: _currentStep == 4 ? _confirmBooking : _nextStep,
-                                            icon: _currentStep == 4 ? Icons.check_circle : Icons.arrow_forward,
+                                            label: _currentStep == 5 ? 'Confirm Booking' : 'Continue',
+                                            onPressed: _currentStep == 5 ? _onConfirmBooking : _nextStep,
+                                            icon: _currentStep == 5 ? Icons.check_circle : Icons.arrow_forward,
                                         ),
                                 ),
                             ],
@@ -293,6 +301,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             case 3:
                 return _buildAddressStep();
             case 4:
+                return _buildPaymentStep();
+            case 5:
                 return _buildSummaryStep(services);
             default:
                 return const SizedBox.shrink();
@@ -798,108 +808,134 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             onAddressSelected: (address) {
                 setState(() => _address = address);
             },
-            onAddAddress: _showAddAddressModal,
+            onAddAddress: () async {
+                final result = await showAddAddressModal(context);
+                if (result != null && result.isNotEmpty) {
+                    if (_addresses.contains(result)) {
+                        setState(() => _address = result);
+                    } else {
+                        setState(() {
+                            _addresses = [..._addresses, result];
+                            _address = result;
+                        });
+                    }
+                }
+            },
+        );
+    }
+    
+    Widget _buildPaymentStep() {
+        final user = ref.read(userProvider);
+        final totalPrice = calculateTotalPrice(ref, _selectedServices);
+        
+        return PaymentMethodSelector(
+            onPaymentMethodSelected: (method) {
+                setState(() {
+                    _selectedPaymentMethod = method;
+                });
+            },
+            showWalletOption: true,
+            walletBalance: user.walletBalance,
+            orderAmount: totalPrice,
         );
     }
     
     Widget _buildSummaryStep(List<Service> services) {
-        return OrderSummary(
-            selectedServices: _selectedServices,
-            allServices: services,
-            pickupSlot: _pickupSlotText,
-            deliverySlot: _deliverySlotText,
-            address: _address,
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                OrderSummary(
+                    selectedServices: _selectedServices,
+                    allServices: services,
+                    pickupSlot: _pickupSlotText,
+                    deliverySlot: _deliverySlotText,
+                    address: _address,
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Payment method summary
+                if (_selectedPaymentMethod != null)
+                    Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                ),
+                            ],
+                            border: Border.all(color: Colors.grey.shade100),
+                        ),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                Text(
+                                    'Payment Method',
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                    ),
+                                ),
+                                
+                                const SizedBox(height: 16),
+                                
+                                Row(
+                                    children: [
+                                        Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Icon(
+                                                IconData(
+                                                    _selectedPaymentMethod!.type == PaymentMethodType.stripe
+                                                        ? 0xe8a7 // credit_card
+                                                        : _selectedPaymentMethod!.type == PaymentMethodType.paypal
+                                                            ? 0xe081 // account_balance
+                                                            : _selectedPaymentMethod!.type == PaymentMethodType.cash
+                                                                ? 0xe8ee // payments
+                                                                : 0xe850, // account_balance_wallet
+                                                    fontFamily: 'MaterialIcons',
+                                                ),
+                                                color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                        ),
+                                        
+                                        const SizedBox(width: 16),
+                                        
+                                        Text(
+                                            _selectedPaymentMethod!.displayName,
+                                            style: Theme.of(context).textTheme.titleMedium,
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
+                    ),
+            ],
         );
     }
     
-    void _confirmBooking() async {
-        // Set loading state
-        setState(() {
-            _isLoading = true;
-        });
-        
-        // Simulate API call with a delay
-        await Future.delayed(const Duration(seconds: 2));
-        
-        // Generate a random order number
-        final orderNumber = 'ORD${math.Random().nextInt(900000) + 100000}';
-        
-        // Reset loading state
-        setState(() {
-            _isLoading = false;
-        });
-        
-        // Show success modal
-        if (!mounted) return;
-        
-        showDialog(
+    // Call the confirmBooking function from booking_methods.dart
+    void _onConfirmBooking() {
+        confirmBooking(
             context: context,
-            barrierDismissible: false,
-            builder: (context) => BookingSuccessModal(
-                orderNumber: orderNumber,
-                services: _selectedServices,
-                pickupTime: _pickupSlotText,
-                deliveryTime: _deliverySlotText,
-                address: _address,
-                onViewOrders: () {
-                    context.pop(); // Close the modal
-                    context.go('/orders');
-                },
-                onDone: () {
-                    context.pop(); // Close the modal
-                    context.go('/home');
-                },
-            ),
-        );
-    }
-
-    Future<void> _showAddAddressModal() async {
-        final controller = TextEditingController();
-        final theme = Theme.of(context);
-        final newAddress = await showDialog<String>(
-            context: context,
-            builder: (context) {
-                return AlertDialog(
-                    title: const Text('Add New Address'),
-                    content: TextField(
-                        controller: controller,
-                        autofocus: true,
-                        textInputAction: TextInputAction.done,
-                        decoration: const InputDecoration(
-                            hintText: 'Enter pickup address',
-                        ),
-                        onSubmitted: (_) => Navigator.of(context).pop(controller.text.trim()),
-                    ),
-                    actions: [
-                        TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: theme.primaryColor,
-                            ),
-                            child: const Text('Save'),
-                        ),
-                    ],
-                );
+            ref: ref,
+            selectedServices: _selectedServices,
+            pickupSlotText: _pickupSlotText,
+            deliverySlotText: _deliverySlotText,
+            address: _address,
+            selectedPaymentMethod: _selectedPaymentMethod,
+            setLoading: (isLoading) {
+                setState(() {
+                    _isLoading = isLoading;
+                });
             },
         );
-
-        final trimmed = (newAddress ?? '').trim();
-        if (trimmed.isEmpty) {
-            return;
-        }
-
-        if (_addresses.contains(trimmed)) {
-            setState(() => _address = trimmed);
-            return;
-        }
-
-        setState(() {
-            _addresses = [..._addresses, trimmed];
-            _address = trimmed;
-        });
     }
 }

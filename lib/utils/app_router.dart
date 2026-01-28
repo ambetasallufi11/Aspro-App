@@ -8,6 +8,9 @@ import '../screens/home/home_screen.dart';
 import '../screens/laundry/laundry_details_screen.dart';
 import '../screens/orders/order_tracking_screen.dart';
 import '../screens/orders/orders_screen.dart';
+import '../screens/payment/payment_history_screen.dart';
+import '../screens/payment/wallet_screen.dart';
+import '../screens/payment/refund_request_screen.dart';
 import '../screens/profile/app_settings_screen.dart';
 import '../screens/profile/privacy_security_screen.dart';
 import '../screens/profile/profile_screen.dart';
@@ -56,6 +59,21 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/payment/history',
+        builder: (context, state) => const PaymentHistoryScreen(),
+      ),
+      GoRoute(
+        path: '/payment/wallet',
+        builder: (context, state) => const WalletScreen(),
+      ),
+      GoRoute(
+        path: '/payment/refund',
+        builder: (context, state) => RefundRequestScreen(
+          orderId: state.uri.queryParameters['orderId'] ?? '',
+          transactionId: state.uri.queryParameters['transactionId'] ?? '',
+        ),
       ),
       GoRoute(
         path: '/profile/settings',
