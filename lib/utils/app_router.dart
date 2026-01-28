@@ -11,6 +11,8 @@ import '../screens/orders/orders_screen.dart';
 import '../screens/payment/payment_history_screen.dart';
 import '../screens/payment/wallet_screen.dart';
 import '../screens/payment/refund_request_screen.dart';
+import '../screens/profile/app_settings_screen.dart';
+import '../screens/profile/privacy_security_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/splash_screen.dart';
 
@@ -72,6 +74,14 @@ class AppRouter {
           orderId: state.uri.queryParameters['orderId'] ?? '',
           transactionId: state.uri.queryParameters['transactionId'] ?? '',
         ),
+      ),
+      GoRoute(
+        path: '/profile/settings',
+        builder: (context, state) => const AppSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/profile/privacy',
+        builder: (context, state) => const PrivacySecurityScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
