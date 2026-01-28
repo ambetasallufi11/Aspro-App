@@ -19,6 +19,8 @@ class StatusTimeline extends StatelessWidget {
         return 3;
       case OrderStatus.delivered:
         return 4;
+      case OrderStatus.cancelled:
+        return -1; // Special case for cancelled orders
     }
   }
 
@@ -31,6 +33,48 @@ class StatusTimeline extends StatelessWidget {
       'Ready',
       'Delivered',
     ];
+
+    // Special case for cancelled orders
+    if (status == OrderStatus.cancelled) {
+      return Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 14,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Text(
+                  'Cancelled',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 26),
+            child: Text(
+              'This order has been cancelled',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
+            ),
+          ),
+        ],
+      );
+    }
 
     return Column(
       children: List.generate(steps.length, (index) {
