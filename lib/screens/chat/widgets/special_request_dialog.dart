@@ -44,7 +44,7 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final templates = ref.watch(specialRequestTemplatesProvider);
+    final templates = ref.watch(specialRequestTemplatesProvider(widget.isSupport));
     final theme = Theme.of(context);
     
     final dialogTitle = context.l10n.t('Special Requests');

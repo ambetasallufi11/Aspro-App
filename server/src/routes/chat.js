@@ -9,14 +9,28 @@ router.post('/rooms', auth, requireRole('user', 'admin'), async (req, res) => {
   if (!merchant_id) return res.status(400).json({ error: 'Missing merchant_id' });
 
   const existing = await db.query(
-    'SELECT * FROM chat_rooms WHERE user_id=$1 AND merchant_id=$2',
+    'SELECT * FROM chat_rooms WHERE user_id=$1 AND merchant_id=$2 AND is_support=false',
     [req.user.id, merchant_id]
   );
   if (existing.rows[0]) return res.json(existing.rows[0]);
 
   const result = await db.query(
-    'INSERT INTO chat_rooms (user_id, merchant_id) VALUES ($1,$2) RETURNING *',
+    'INSERT INTO chat_rooms (user_id, merchant_id, is_support) VALUES ($1,$2,false) RETURNING *',
     [req.user.id, merchant_id]
+  );
+  return res.json(result.rows[0]);
+});
+
+router.post('/support', auth, requireRole('user', 'admin'), async (req, res) => {
+  const existing = await db.query(
+    'SELECT * FROM chat_rooms WHERE user_id=$1 AND is_support=true',
+    [req.user.id]
+  );
+  if (existing.rows[0]) return res.json(existing.rows[0]);
+
+  const result = await db.query(
+    'INSERT INTO chat_rooms (user_id, merchant_id, is_support) VALUES ($1,NULL,true) RETURNING *',
+    [req.user.id]
   );
   return res.json(result.rows[0]);
 });
@@ -24,9 +38,9 @@ router.post('/rooms', auth, requireRole('user', 'admin'), async (req, res) => {
 router.get('/rooms', auth, async (req, res) => {
   if (req.user.role === 'admin') {
     const result = await db.query(
-      `SELECT cr.*, m.name AS merchant_name, u.name AS user_name
+      `SELECT cr.*, m.name AS merchant_name, m.image_url AS merchant_image_url, u.name AS user_name
        FROM chat_rooms cr
-       JOIN merchants m ON cr.merchant_id=m.id
+       LEFT JOIN merchants m ON cr.merchant_id=m.id
        JOIN users u ON cr.user_id=u.id`
     );
     return res.json(result.rows);
@@ -37,7 +51,7 @@ router.get('/rooms', auth, async (req, res) => {
        FROM chat_rooms cr
        JOIN merchants m ON cr.merchant_id=m.id
        JOIN users u ON cr.user_id=u.id
-       WHERE m.owner_user_id=$1`,
+       WHERE m.owner_user_id=$1 AND cr.is_support=false`,
       [req.user.id]
     );
     return res.json(result.rows);
@@ -46,7 +60,7 @@ router.get('/rooms', auth, async (req, res) => {
   const result = await db.query(
     `SELECT cr.*, m.name AS merchant_name, m.image_url AS merchant_image_url
      FROM chat_rooms cr
-     JOIN merchants m ON cr.merchant_id=m.id
+     LEFT JOIN merchants m ON cr.merchant_id=m.id
      WHERE cr.user_id=$1`,
     [req.user.id]
   );
