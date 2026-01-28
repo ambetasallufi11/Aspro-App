@@ -8,7 +8,8 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/locale_provider.dart';
 import '../../data/mock/mock_data.dart';
 import '../../models/payment_method.dart';
-import '../../providers/mock_providers.dart';
+import '../../providers/api_providers.dart';
+import '../../providers/mock_providers.dart' as mock;
 import '../../services/payment_service.dart';
 import 'booking_methods.dart';
 import '../../widgets/booking_step_indicator.dart';
@@ -38,6 +39,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     String _address = '128 Market Street, San Francisco, CA';
     bool _isLoading = false;
     late List<String> _addresses;
+    List<Service> _servicesCache = const [];
+    int _merchantId = 1;
     PaymentMethod? _selectedPaymentMethod;
     
     // Date selection
@@ -84,8 +87,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     void initState() {
         super.initState();
         final authState = ref.read(authProvider);
-        final fallbackAddresses = MockData.user.addresses;
-        _addresses = List.of(authState.currentUser?.addresses ?? fallbackAddresses);
+        _addresses = List.of(authState.currentUser?.addresses ?? const <String>[]);
         if (_addresses.isNotEmpty && !_addresses.contains(_address)) {
             _address = _addresses.first;
         }
@@ -181,13 +183,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
 
     @override
     Widget build(BuildContext context) {
-        final services = ref.watch(servicesProvider);
+        final servicesAsync = ref.watch(servicesProvider);
         final authState = ref.watch(authProvider);
-        final user = ref.watch(userProvider);
-        final paymentMethods = ref.watch(paymentMethodsProvider);
+        final user = ref.watch(mock.userProvider);
+        final paymentMethods = ref.watch(mock.paymentMethodsProvider);
         final l10n = context.l10n;
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
-        final addresses = authState.currentUser?.addresses ?? MockData.user.addresses;
+        final addresses = authState.currentUser?.addresses ?? const <String>[];
 
         return WillPopScope(
             onWillPop: () async {
@@ -218,28 +220,39 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     elevation: 0,
                     backgroundColor: Colors.white,
                 ),
-            body: Column(
-                children: [
-                    // Custom step indicator
-                    Padding(
+                elevation: 0,
+                backgroundColor: Colors.white,
+            ),
+              body: servicesAsync.when(
+                data: (services) {
+                  _servicesCache = services;
+                  return Column(
+                    children: [
+                      // Custom step indicator
+                      Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: BookingStepIndicator(
-                            currentStep: _currentStep,
-                            steps: _steps(context),
+                          currentStep: _currentStep,
+                          steps: _steps(context),
                         ),
-                    ),
-                    
-                    // Main content area
-                    Expanded(
+                      ),
+                      // Main content area
+                      Expanded(
                         child: SingleChildScrollView(
-                            padding: const EdgeInsets.all(16),
-                            child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                child: _buildCurrentStepContent(services),
-                            ),
+                          padding: const EdgeInsets.all(16),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: _buildCurrentStepContent(services),
+                          ),
                         ),
-                    ),
-                    
+                      ),
+                      _buildBottomButton(services),
+                    ],
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, __) => const Center(child: Text('Failed to load services')),
+              ),
                     // Bottom navigation buttons
                     Container(
                         padding: const EdgeInsets.all(16),
@@ -312,7 +325,11 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         ),
                     ),
                 ],
-                ),
+
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, __) => const Center(child: Text('Failed to load services')),
+
             ),
         );
     }
@@ -328,7 +345,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             case 3:
                 return _buildAddressStep();
             case 4:
-                return _buildPaymentStep();
+                return _buildPaymentStep(services);
             case 5:
                 return _buildSummaryStep(services);
             default:
@@ -337,6 +354,11 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     }
     
     Widget _buildServicesStep(List<Service> services) {
+        final uniqueServices = <String, Service>{};
+        for (final service in services) {
+            uniqueServices.putIfAbsent(service.name, () => service);
+        }
+        final dedupedServices = uniqueServices.values.toList();
         return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -359,7 +381,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 
                 const SizedBox(height: 24),
                 
-                ...services.map((service) {
+                ...dedupedServices.map((service) {
                     final isSelected = _selectedServices.contains(service.name);
                     return ServiceCard(
                         service: service,
@@ -857,9 +879,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         );
     }
     
-    Widget _buildPaymentStep() {
-        final user = ref.read(userProvider);
-        final totalPrice = calculateTotalPrice(ref, _selectedServices);
+    Widget _buildPaymentStep(List<Service> services) {
+        final user = ref.read(mock.userProvider);
+        final totalPrice = calculateTotalPrice(services, _selectedServices);
         
         return PaymentMethodSelector(
             onPaymentMethodSelected: (method) {
@@ -960,6 +982,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             context: context,
             ref: ref,
             selectedServices: _selectedServices,
+            services: _servicesCache,
+            merchantId: _merchantId,
             pickupSlotText: _pickupSlotText,
             deliverySlotText: _deliverySlotText,
             address: _address,

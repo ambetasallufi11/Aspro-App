@@ -9,7 +9,8 @@ import '../../models/transaction.dart';
 import '../../models/payment_method.dart';
 import '../../models/order.dart';
 import '../../l10n/app_localizations.dart';
-import '../../providers/mock_providers.dart';
+import '../../providers/api_providers.dart';
+import '../../providers/mock_providers.dart' as mock;
 import '../../widgets/status_timeline.dart';
 
 class OrderTrackingScreen extends ConsumerWidget {
@@ -19,7 +20,23 @@ class OrderTrackingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final orders = ref.watch(ordersProvider);
+    final ordersAsync = ref.watch(ordersProvider);
+    if (ordersAsync.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (ordersAsync.hasError) {
+      return const Scaffold(
+        body: Center(child: Text('Failed to load order')),
+      );
+    }
+    final orders = ordersAsync.value ?? [];
+    if (orders.isEmpty) {
+      return const Scaffold(
+        body: Center(child: Text('No orders found')),
+      );
+    }
     final order = orders.firstWhere(
       (item) => item.id == orderId,
       orElse: () => orders.first,
@@ -181,7 +198,7 @@ class OrderTrackingScreen extends ConsumerWidget {
   Widget _buildPaymentInfo(BuildContext context, order, WidgetRef ref) {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
-    final transactions = ref.watch(transactionsProvider);
+    final transactions = ref.watch(mock.transactionsProvider);
     
     // Find the payment transaction for this order
     final paymentTransaction = transactions.firstWhere(
@@ -369,7 +386,7 @@ class OrderTrackingScreen extends ConsumerWidget {
   }
   
   void _showRefundOptions(BuildContext context, order, WidgetRef ref) {
-    final transactions = ref.read(transactionsProvider);
+    final transactions = ref.read(mock.transactionsProvider);
     
     // Find the payment transaction for this order
     final paymentTransaction = transactions.firstWhere(

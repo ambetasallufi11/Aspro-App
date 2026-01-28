@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/mock/mock_chat_data.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../models/laundry.dart';
-import 'mock_providers.dart';
+import 'api_providers.dart';
 
 class ChatState {
   final List<ChatConversation> conversations;
@@ -30,7 +28,7 @@ class ChatState {
       conversations: conversations ?? this.conversations,
       activeConversation: activeConversation ?? this.activeConversation,
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      error: error,
     );
   }
 }
@@ -38,77 +36,97 @@ class ChatState {
 class ChatNotifier extends Notifier<ChatState> {
   @override
   ChatState build() {
-    return ChatState(
-      conversations: MockChatData.conversations,
-    );
+    Future.microtask(loadConversations);
+    return const ChatState(conversations: []);
   }
 
-  // Set the active conversation
-  void setActiveConversation(String conversationId) {
+  Future<void> loadConversations() async {
+    final auth = ref.read(authProvider);
+    if (auth.currentUser == null) return;
+    final api = ref.read(apiClientProvider);
+    final rooms = await api.chatRooms();
+    final conversations = rooms.map((room) {
+      return ChatConversation(
+        id: (room['id'] as int).toString(),
+        userId: (room['user_id'] as int).toString(),
+        merchantId: (room['merchant_id'] as int).toString(),
+        merchantName: room['merchant_name'] as String? ?? 'Merchant',
+        merchantImageUrl: room['merchant_image_url'] as String?,
+        messages: const [],
+        lastUpdated: DateTime.now(),
+        isSupport: false,
+      );
+    }).toList();
+
+    state = state.copyWith(conversations: conversations);
+  }
+
+  Future<void> setActiveConversation(String conversationId) async {
     final conversation = state.conversations.firstWhere(
       (conv) => conv.id == conversationId,
       orElse: () => throw Exception('Conversation not found'),
     );
+    final auth = ref.read(authProvider);
+    final api = ref.read(apiClientProvider);
+    final msgs = await api.chatMessages(int.parse(conversationId));
+    final userId = auth.currentUser?.id ?? 0;
 
-    state = state.copyWith(activeConversation: conversation);
+    final messages = msgs.map((m) {
+      final senderId = m['sender_user_id'] as int;
+      return ChatMessage(
+        id: (m['id'] as int).toString(),
+        senderId: senderId.toString(),
+        receiverId: conversation.merchantId,
+        content: m['text'] as String,
+        timestamp: DateTime.parse(m['created_at'] as String),
+        isFromUser: senderId == userId,
+        type: MessageType.text,
+      );
+    }).toList();
+
+    state = state.copyWith(
+      activeConversation: conversation.copyWith(messages: messages),
+    );
   }
 
-  // Create a new conversation with a merchant
-  void createConversation(Laundry merchant) {
-    final userId = MockChatData.currentUserId;
-    final existingConversation = state.conversations.firstWhere(
-      (conv) => conv.merchantId == merchant.id && conv.userId == userId,
-      orElse: () => ChatConversation.fromLaundry(merchant, userId),
+  Future<void> createConversation(Laundry merchant) async {
+    final api = ref.read(apiClientProvider);
+    final room = await api.createRoom(merchantId: int.parse(merchant.id));
+    final conversation = ChatConversation(
+      id: (room['id'] as int).toString(),
+      userId: (room['user_id'] as int).toString(),
+      merchantId: (room['merchant_id'] as int).toString(),
+      merchantName: merchant.name,
+      merchantImageUrl: merchant.imageUrl,
+      messages: const [],
+      lastUpdated: DateTime.now(),
+      isSupport: false,
     );
 
-    if (!state.conversations.any((conv) => conv.id == existingConversation.id)) {
-      final updatedConversations = [...state.conversations, existingConversation];
-      state = state.copyWith(
-        conversations: updatedConversations,
-        activeConversation: existingConversation,
-      );
-    } else {
-      state = state.copyWith(activeConversation: existingConversation);
-    }
-  }
-  
-  // Create or access the support conversation
-  void createSupportConversation() {
-    final userId = MockChatData.currentUserId;
-    final supportBotId = MockChatData.supportBotId;
-    
-    // First check if a support conversation already exists
-    final existingConversation = state.conversations.firstWhere(
-      (conv) => conv.isSupport && conv.merchantId == supportBotId && conv.userId == userId,
-      orElse: () => MockChatData.supportConversation,
+    state = state.copyWith(
+      conversations: [...state.conversations, conversation],
+      activeConversation: conversation,
     );
-
-    if (!state.conversations.any((conv) => conv.id == existingConversation.id)) {
-      // If the support conversation doesn't exist in our list, add it
-      final updatedConversations = [...state.conversations, existingConversation];
-      state = state.copyWith(
-        conversations: updatedConversations,
-        activeConversation: existingConversation,
-      );
-    } else {
-      // If it already exists, just set it as active
-      state = state.copyWith(activeConversation: existingConversation);
-    }
   }
 
-  // Send a text message
-  void sendTextMessage(String content) {
+  Future<void> sendTextMessage(String content) async {
     if (state.activeConversation == null) {
       state = state.copyWith(error: 'No active conversation');
       return;
     }
 
+    final api = ref.read(apiClientProvider);
+    final msg = await api.sendMessage(
+      roomId: int.parse(state.activeConversation!.id),
+      text: content,
+    );
+
     final newMessage = ChatMessage(
-      id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
-      senderId: MockChatData.currentUserId,
+      id: (msg['id'] as int).toString(),
+      senderId: (msg['sender_user_id'] as int).toString(),
       receiverId: state.activeConversation!.merchantId,
-      content: content,
-      timestamp: DateTime.now(),
+      content: msg['text'] as String,
+      timestamp: DateTime.parse(msg['created_at'] as String),
       isFromUser: true,
       type: MessageType.text,
     );
@@ -116,48 +134,14 @@ class ChatNotifier extends Notifier<ChatState> {
     _addMessageToConversation(newMessage);
   }
 
-  // Send an image message
   void sendImageMessage(String imageUrl) {
-    if (state.activeConversation == null) {
-      state = state.copyWith(error: 'No active conversation');
-      return;
-    }
-
-    final newMessage = ChatMessage(
-      id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
-      senderId: MockChatData.currentUserId,
-      receiverId: state.activeConversation!.merchantId,
-      content: imageUrl,
-      timestamp: DateTime.now(),
-      isFromUser: true,
-      type: MessageType.image,
-      imageUrl: imageUrl,
-    );
-
-    _addMessageToConversation(newMessage);
+    // not implemented for API MVP
   }
 
-  // Send a special request
   void sendSpecialRequest(String request) {
-    if (state.activeConversation == null) {
-      state = state.copyWith(error: 'No active conversation');
-      return;
-    }
-
-    final newMessage = ChatMessage(
-      id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
-      senderId: MockChatData.currentUserId,
-      receiverId: state.activeConversation!.merchantId,
-      content: request,
-      timestamp: DateTime.now(),
-      isFromUser: true,
-      type: MessageType.specialRequest,
-    );
-
-    _addMessageToConversation(newMessage);
+    sendTextMessage(request);
   }
 
-  // Helper method to add a message to the active conversation
   void _addMessageToConversation(ChatMessage message) {
     if (state.activeConversation == null) return;
 
@@ -182,74 +166,8 @@ class ChatNotifier extends Notifier<ChatState> {
       conversations: updatedConversations,
       activeConversation: updatedConversation,
     );
-
-    // Simulate merchant response after a delay (for demo purposes)
-    if (kDebugMode) {
-      Future.delayed(const Duration(seconds: 2), () {
-        _simulateMerchantResponse(message);
-      });
-    }
   }
 
-  // Simulate merchant response (for demo purposes)
-  void _simulateMerchantResponse(ChatMessage userMessage) {
-    if (state.activeConversation == null) return;
-    
-    String responseContent;
-    MessageType responseType = MessageType.text;
-    
-    // If this is a support conversation, use different responses
-    if (state.activeConversation!.isSupport) {
-      responseContent = _generateSupportResponse(userMessage.content);
-    } else {
-      // Regular merchant responses
-      switch (userMessage.type) {
-        case MessageType.text:
-          responseContent = 'Thanks for your message! We\'ll get back to you shortly.';
-          break;
-        case MessageType.image:
-          responseContent = 'Thanks for sharing the image. We\'ll take a look at it.';
-          break;
-        case MessageType.specialRequest:
-          responseContent = 'We\'ve noted your special request: "${userMessage.content}". We\'ll make sure to follow these instructions.';
-          break;
-      }
-    }
-
-    final responseMessage = ChatMessage(
-      id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
-      senderId: state.activeConversation!.merchantId,
-      receiverId: MockChatData.currentUserId,
-      content: responseContent,
-      timestamp: DateTime.now(),
-      isFromUser: false,
-      type: responseType,
-    );
-
-    final updatedMessages = [
-      ...state.activeConversation!.messages,
-      responseMessage,
-    ];
-
-    final updatedConversation = state.activeConversation!.copyWith(
-      messages: updatedMessages,
-      lastUpdated: DateTime.now(),
-    );
-
-    final updatedConversations = state.conversations.map((conv) {
-      if (conv.id == updatedConversation.id) {
-        return updatedConversation;
-      }
-      return conv;
-    }).toList();
-
-    state = state.copyWith(
-      conversations: updatedConversations,
-      activeConversation: updatedConversation,
-    );
-  }
-
-  // Mark conversation as read
   void markConversationAsRead(String conversationId) {
     final updatedConversations = state.conversations.map((conv) {
       if (conv.id == conversationId && conv.hasUnreadMessages) {
@@ -261,57 +179,27 @@ class ChatNotifier extends Notifier<ChatState> {
     state = state.copyWith(conversations: updatedConversations);
   }
 
-  // Get special request templates
   List<String> getSpecialRequestTemplates() {
-    return MockChatData.specialRequestTemplates;
-  }
-  
-  // Get support request templates
-  List<String> getSupportRequestTemplates() {
-    return MockChatData.supportRequestTemplates;
-  }
-  
-  // Generate automated support response based on message content
-  String _generateSupportResponse(String messageContent) {
-    final lowerCaseMessage = messageContent.toLowerCase();
-    
-    // Check if the message contains any of our keywords
-    if (lowerCaseMessage.contains('order') || lowerCaseMessage.contains('#')) {
-      return MockChatData.supportResponses['order']!;
-    } else if (lowerCaseMessage.contains('payment') || lowerCaseMessage.contains('pay') || 
-               lowerCaseMessage.contains('wallet') || lowerCaseMessage.contains('money')) {
-      return MockChatData.supportResponses['payment']!;
-    } else if (lowerCaseMessage.contains('delivery') || lowerCaseMessage.contains('time') ||
-               lowerCaseMessage.contains('reschedule')) {
-      return MockChatData.supportResponses['delivery']!;
-    } else if (lowerCaseMessage.contains('cancel')) {
-      return MockChatData.supportResponses['cancel']!;
-    } else if (lowerCaseMessage.contains('track') || lowerCaseMessage.contains('where')) {
-      return MockChatData.supportResponses['track']!;
-    } else if (lowerCaseMessage.contains('help')) {
-      return MockChatData.supportResponses['help']!;
-    }
-    
-    // Default response if no keywords match
-    return MockChatData.supportResponses['default']!;
+    return [
+      'Wash on cold and low spin',
+      'Use hypoallergenic detergent',
+      'Hang dry delicate items',
+    ];
   }
 }
 
 final chatProvider = NotifierProvider<ChatNotifier, ChatState>(ChatNotifier.new);
 
-// Provider for active conversation messages
 final activeConversationMessagesProvider = Provider<List<ChatMessage>>((ref) {
   final chatState = ref.watch(chatProvider);
   return chatState.activeConversation?.messages ?? [];
 });
 
-// Provider for conversation list
 final conversationListProvider = Provider<List<ChatConversation>>((ref) {
   final chatState = ref.watch(chatProvider);
   return chatState.conversations;
 });
 
-// Provider for special request templates
 final specialRequestTemplatesProvider = Provider<List<String>>((ref) {
-  return MockChatData.specialRequestTemplates;
+  return ref.watch(chatProvider.notifier).getSpecialRequestTemplates();
 });

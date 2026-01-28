@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merchant Dashboard</title>
+  <link rel="stylesheet" href="/admin/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1>Merchant Dashboard</h1>
+      <button id="logout" class="ghost">Logout</button>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>My Business</h2>
+        <label>Name</label>
+        <input id="m-name" />
+        <label>ETA</label>
+        <input id="m-eta" />
+        <label>Price Range</label>
+        <input id="m-price" />
+        <label>Hours</label>
+        <input id="m-hours" />
+        <button id="save-merchant" class="primary">Save</button>
+      </section>
+
+      <section class="card">
+        <h2>Add Service</h2>
+        <label>Name</label>
+        <input id="s-name" />
+        <label>Description</label>
+        <input id="s-desc" />
+        <label>Price</label>
+        <input id="s-price" />
+        <button id="add-service" class="primary">Add</button>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>My Services</h2>
+      <div id="services"></div>
+    </section>
+
+    <section class="card">
+      <h2>Orders</h2>
+      <div id="orders"></div>
+    </section>
+
+    <section class="card">
+      <h2>Chat</h2>
+      <div class="row">
+        <select id="rooms"></select>
+        <button id="load-messages" class="ghost">Load</button>
+      </div>
+      <div id="messages" class="messages"></div>
+      <div class="row">
+        <input id="msg-text" placeholder="Type reply" />
+        <button id="send-msg" class="primary">Send</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="/admin/merchant.js"></script>
+</body>
+</html>

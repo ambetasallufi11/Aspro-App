@@ -152,9 +152,9 @@ class ConversationsScreen extends ConsumerWidget {
               ],
             )
           : null,
-      onTap: () {
+      onTap: () async {
         // Set active conversation and navigate to chat screen
-        ref.read(chatProvider.notifier).setActiveConversation(conversation.id);
+        await ref.read(chatProvider.notifier).setActiveConversation(conversation.id);
         
         // Mark as read
         if (hasUnread) {

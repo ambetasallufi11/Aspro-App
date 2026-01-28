@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
 
 import '../../models/payment_method.dart';
-import '../../providers/mock_providers.dart';
+import '../../models/service.dart';
+import '../../providers/api_providers.dart';
 import '../../services/payment_service.dart';
 import '../../widgets/booking_success_modal.dart';
 
 // Calculate total price based on selected services
-double calculateTotalPrice(WidgetRef ref, Set<String> selectedServices) {
-  final services = ref.read(servicesProvider);
+double calculateTotalPrice(List<Service> services, Set<String> selectedServices) {
   double total = 0;
   for (final service in services) {
     if (selectedServices.contains(service.name)) {
@@ -25,6 +25,8 @@ Future<void> confirmBooking({
   required BuildContext context,
   required WidgetRef ref,
   required Set<String> selectedServices,
+  required List<Service> services,
+  required int merchantId,
   required String pickupSlotText,
   required String deliverySlotText,
   required String address,
@@ -50,7 +52,7 @@ Future<void> confirmBooking({
   
   // Process payment
   final paymentService = ref.read(paymentServiceProvider);
-  final totalPrice = calculateTotalPrice(ref, selectedServices);
+  final totalPrice = calculateTotalPrice(services, selectedServices);
   
   bool paymentSuccess = false;
   
@@ -85,6 +87,19 @@ Future<void> confirmBooking({
     return;
   }
   
+  // Create order in backend
+  try {
+    final api = ref.read(apiClientProvider);
+    final items = services
+        .where((s) => selectedServices.contains(s.name))
+        .map((s) => {'service_id': int.parse(s.id), 'qty': 1})
+        .toList()
+        .cast<Map<String, dynamic>>();
+    await api.createOrder(merchantId: merchantId, items: items);
+  } catch (e) {
+    // Ignore for demo; order creation failed
+  }
+
   // Show success modal
   if (!context.mounted) return;
   

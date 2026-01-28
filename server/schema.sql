@@ -1,0 +1,80 @@
+-- Drop & recreate (dev only)
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS chat_rooms;
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS services;
+DROP TABLE IF EXISTS merchants;
+DROP TABLE IF EXISTS addresses;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(200) NOT NULL,
+  phone VARCHAR(30),
+  role VARCHAR(20) NOT NULL DEFAULT 'user',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE addresses (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  address TEXT NOT NULL
+);
+
+CREATE TABLE merchants (
+  id SERIAL PRIMARY KEY,
+  owner_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  name VARCHAR(100) NOT NULL,
+  latitude DECIMAL(10,6),
+  longitude DECIMAL(10,6),
+  rating DECIMAL(3,1),
+  price_range VARCHAR(10),
+  eta VARCHAR(50),
+  image_url TEXT,
+  hours TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE services (
+  id SERIAL PRIMARY KEY,
+  merchant_id INTEGER REFERENCES merchants(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  merchant_id INTEGER REFERENCES merchants(id) ON DELETE SET NULL,
+  status VARCHAR(20) DEFAULT 'pending',
+  total DECIMAL(10,2) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE order_items (
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+  service_id INTEGER REFERENCES services(id) ON DELETE SET NULL,
+  qty INTEGER NOT NULL DEFAULT 1,
+  price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE chat_rooms (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  merchant_id INTEGER REFERENCES merchants(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE messages (
+  id SERIAL PRIMARY KEY,
+  room_id INTEGER REFERENCES chat_rooms(id) ON DELETE CASCADE,
+  sender_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  text TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

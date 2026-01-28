@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../providers/mock_providers.dart';
+import '../../providers/api_providers.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/chat_provider.dart';
 
@@ -114,7 +114,7 @@ class ProfileScreen extends ConsumerWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 // Create support conversation and navigate to chat
-                ref.read(chatProvider.notifier).createSupportConversation();
+                // Support chat not yet wired; use conversations list instead.
                 context.push('/chat');
               },
             ),
