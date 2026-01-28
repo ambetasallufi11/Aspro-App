@@ -47,3 +47,4 @@ server/node_modules/
 linux/flutter/ephemeral/
 ios/Runner.xcworkspace/contents.xcworkspacedata
 macos/Flutter/GeneratedPluginRegistrant.swift
+server/.env
