@@ -25,6 +25,7 @@ class LaundryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           child: Container(
             padding: const EdgeInsets.all(16),
+            constraints: const BoxConstraints(minHeight: 420), // Increased minimum height for content
             decoration: BoxDecoration(
               color: theme.cardTheme.color,
               borderRadius: BorderRadius.circular(24),
@@ -54,7 +55,7 @@ class LaundryCard extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: SizedBox(
-                          height: 140,
+                          height: 170, // Further increased to ensure more space for content
                           width: double.infinity,
                           child: Image.asset(
                             laundry.imageUrl!,
@@ -98,7 +99,7 @@ class LaundryCard extends StatelessWidget {
                     ],
                   ),
                 if (laundry.imageUrl != null)
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 30), // Further increased spacing after the image
                 
                 // Laundry name with gradient underline
                 Column(
@@ -108,8 +109,10 @@ class LaundryCard extends StatelessWidget {
                       laundry.name,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        fontSize: 18,
+                        fontSize: 16, // Slightly smaller font size to fit more text
                       ),
+                      maxLines: 3, // Allow up to 3 lines for longer names
+                      overflow: TextOverflow.visible, // Make all text visible without ellipsis
                     ),
                     const SizedBox(height: 4),
                     Container(
@@ -123,7 +126,7 @@ class LaundryCard extends StatelessWidget {
                   ],
                 ),
                 
-                const SizedBox(height: 12),
+                const SizedBox(height: 16), // Increased vertical spacing
                 
                 // Distance and price with icons
                 Row(
