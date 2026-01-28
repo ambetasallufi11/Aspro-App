@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/laundry.dart';
+import '../../models/promo_code.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/api_providers.dart';
+import '../../providers/promo_code_provider.dart';
 import '../../widgets/primary_button.dart';
 
 class LaundryDetailsScreen extends ConsumerWidget {
@@ -165,7 +167,105 @@ class LaundryDetailsScreen extends ConsumerWidget {
                   tooltip: context.l10n.t('Chat with Merchant'),
                 ),
               ),
+              const SizedBox(width: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.discount_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  onPressed: () {
+                    context.push('/merchant/promo-codes?merchantId=${laundry.id}');
+                  },
+                  tooltip: context.l10n.t('Manage Promo Codes'),
+                ),
+              ),
             ],
+          ),
+          
+          // Merchant promo codes section
+          const SizedBox(height: 24),
+          Consumer(
+            builder: (context, ref, child) {
+              final promoCodes = ref.watch(promoCodesProvider);
+              final merchantCodes = promoCodes
+                  .where((code) => code.merchantId == laundry.id && code.isValid)
+                  .toList();
+                  
+              if (merchantCodes.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.t('Available Promo Codes'),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Column(
+                      children: merchantCodes.map((code) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.discount,
+                                color: Theme.of(context).colorScheme.primary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      code.code,
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    Text(
+                                      context.l10n.t(code.description),
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                code.type == PromoCodeType.percentage
+                                    ? '${code.value.toStringAsFixed(0)}% off'
+                                    : '\$${code.value.toStringAsFixed(2)} off',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),

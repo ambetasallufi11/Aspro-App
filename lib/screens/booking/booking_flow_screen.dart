@@ -191,41 +191,68 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         final primaryColor = const Color(0xFF2196F3); // Material Blue 500
         final addresses = authState.currentUser?.addresses ?? const <String>[];
 
-        return Scaffold(
-            appBar: AppBar(
-                title: Text(l10n.t('Book Pickup')),
-                leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.of(context).maybePop(),
+        return WillPopScope(
+            onWillPop: () async {
+                // If on first step, allow pop
+                // Otherwise, go back one step in the flow and prevent default pop
+                if (_currentStep == 0) {
+                    return true;
+                } else {
+                    _previousStep();
+                    return false;
+                }
+            },
+            child: Scaffold(
+                appBar: AppBar(
+                    title: Text(l10n.t('Book Pickup')),
+                    leading: IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                            // If on first step, pop the entire screen
+                            // Otherwise, go back one step in the flow
+                            if (_currentStep == 0) {
+                                Navigator.of(context).pop();
+                            } else {
+                                _previousStep();
+                            }
+                        },
+                    ),
+                    elevation: 0,
+                    backgroundColor: Colors.white,
                 ),
                 elevation: 0,
                 backgroundColor: Colors.white,
             ),
-            body: servicesAsync.when(
+              body: servicesAsync.when(
                 data: (services) {
-                _servicesCache = services;
-                return Column(
-                children: [
-                    // Custom step indicator
-                    Padding(
+                  _servicesCache = services;
+                  return Column(
+                    children: [
+                      // Custom step indicator
+                      Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: BookingStepIndicator(
-                            currentStep: _currentStep,
-                            steps: _steps(context),
+                          currentStep: _currentStep,
+                          steps: _steps(context),
                         ),
-                    ),
-                    
-                    // Main content area
-                    Expanded(
+                      ),
+                      // Main content area
+                      Expanded(
                         child: SingleChildScrollView(
-                            padding: const EdgeInsets.all(16),
-                        child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                child: _buildCurrentStepContent(services),
-                            ),
+                          padding: const EdgeInsets.all(16),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: _buildCurrentStepContent(services),
+                          ),
                         ),
-                    ),
-                    
+                      ),
+                      _buildBottomButton(services),
+                    ],
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, __) => const Center(child: Text('Failed to load services')),
+              ),
                     // Bottom navigation buttons
                     Container(
                         padding: const EdgeInsets.all(16),
@@ -298,10 +325,11 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         ),
                     ),
                 ],
-            );
+
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (_, __) => const Center(child: Text('Failed to load services')),
+
             ),
         );
     }

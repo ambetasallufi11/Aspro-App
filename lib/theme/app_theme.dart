@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Modern color palette
-  static const _primaryBlue = Color(0xFF4FACFE); // Bright blue
-  static const _secondaryBlue = Color(0xFF00F2FE); // Cyan blue for gradients
-  static const _accentPurple = Color(0xFF6A7BFF); // Soft purple for accents
-  static const _accentTeal = Color(0xFF00CFDE); // Teal for secondary accents
-  static const _highlightBlue = Color(0xFF00B4DB); // Highlight blue
+  // Modern color palette with new blue
+  static const _primaryBlue = Color.fromARGB(255, 128, 205, 244); // New blue color
+  static const _secondaryBlue = Color.fromARGB(255, 65, 150, 200); // Darker blue for buttons
+  static const _lightBlue = Color.fromARGB(255, 128, 205, 244); // Lighter blue for gradients
   
   // Text colors
   static const _textPrimary = Color(0xFF2D3748); // Dark blue-gray for primary text
@@ -21,7 +19,7 @@ class AppTheme {
   );
   
   static const accentGradient = LinearGradient(
-    colors: [_accentPurple, _highlightBlue],
+    colors: [Color.fromARGB(255, 126, 204, 243), _secondaryBlue],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -38,8 +36,8 @@ class AppTheme {
       brightness: Brightness.light,
       primary: _primaryBlue,
       onPrimary: Colors.white,
-      secondary: _accentTeal,
-      tertiary: _accentPurple,
+      secondary: _secondaryBlue,
+      tertiary: _lightBlue,
       surface: Colors.white,
       background: Colors.white,
       onBackground: _textPrimary,
@@ -124,8 +122,8 @@ class AppTheme {
       splashFactory: InkRipple.splashFactory,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: 2,
-          backgroundColor: _primaryBlue,
+          elevation: 3, // Increased elevation for better clickability
+          backgroundColor: _secondaryBlue, // Using darker blue for buttons
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -135,13 +133,13 @@ class AppTheme {
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
-          shadowColor: _primaryBlue.withOpacity(0.4),
+          shadowColor: _secondaryBlue.withOpacity(0.5), // Increased opacity for better shadow
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: _primaryBlue,
-          side: BorderSide(color: _primaryBlue, width: 1.5),
+          foregroundColor: _secondaryBlue, // Using darker blue for buttons
+          side: BorderSide(color: _secondaryBlue, width: 1.5), // Using darker blue for buttons
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -153,7 +151,7 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: _primaryBlue,
+        backgroundColor: _secondaryBlue, // Using darker blue for buttons
         foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -175,8 +173,8 @@ class AppTheme {
       brightness: Brightness.dark,
       primary: _primaryBlue,
       onPrimary: Colors.white,
-      secondary: _accentTeal,
-      tertiary: _accentPurple,
+      secondary: _secondaryBlue,
+      tertiary: _lightBlue,
       surface: const Color(0xFF1A202C),
       background: const Color(0xFF121A29),
       onBackground: Colors.white,
@@ -261,8 +259,8 @@ class AppTheme {
       splashFactory: InkRipple.splashFactory,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: 2,
-          backgroundColor: _primaryBlue,
+          elevation: 3, // Increased elevation for better clickability
+          backgroundColor: _secondaryBlue, // Using darker blue for buttons
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -272,13 +270,13 @@ class AppTheme {
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
-          shadowColor: _primaryBlue.withOpacity(0.4),
+          shadowColor: _secondaryBlue.withOpacity(0.5), // Increased opacity for better shadow
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: _primaryBlue,
-          side: BorderSide(color: _primaryBlue, width: 1.5),
+          foregroundColor: _secondaryBlue, // Using darker blue for buttons
+          side: BorderSide(color: _secondaryBlue, width: 1.5), // Using darker blue for buttons
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -290,7 +288,7 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: _primaryBlue,
+        backgroundColor: _secondaryBlue, // Using darker blue for buttons
         foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(

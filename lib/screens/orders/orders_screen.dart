@@ -18,7 +18,7 @@ class OrdersScreen extends ConsumerWidget {
         title: Text(context.l10n.t('My Orders')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () => context.go('/home'), // Navigate to entry page instead of going back
         ),
       ),
       body: ordersAsync.when(
