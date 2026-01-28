@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/admin/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1>Admin Dashboard</h1>
+      <button id="logout" class="ghost">Logout</button>
+    </div>
+
+    <section class="card">
+      <h2>All Merchants</h2>
+      <div id="merchants"></div>
+    </section>
+
+    <section class="card">
+      <h2>All Orders</h2>
+      <div id="orders"></div>
+    </section>
+
+    <section class="card">
+      <h2>All Chats</h2>
+      <div class="row">
+        <select id="rooms"></select>
+        <button id="load-messages" class="ghost">Load</button>
+      </div>
+      <div id="messages" class="messages"></div>
+    </section>
+  </div>
+
+  <script src="/admin/admin.js"></script>
+</body>
+</html>
