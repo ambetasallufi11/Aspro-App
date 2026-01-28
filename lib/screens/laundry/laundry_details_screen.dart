@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/laundry.dart';
 import '../../providers/chat_provider.dart';
-import '../../providers/mock_providers.dart';
+import '../../providers/api_providers.dart';
 import '../../widgets/primary_button.dart';
 
 class LaundryDetailsScreen extends ConsumerWidget {
@@ -15,8 +15,30 @@ class LaundryDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final laundries = ref.watch(laundriesProvider);
-    final services = ref.watch(servicesProvider);
+    final laundriesAsync = ref.watch(laundriesProvider);
+    final servicesAsync = ref.watch(servicesProvider);
+    if (laundriesAsync.isLoading || servicesAsync.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (laundriesAsync.hasError || servicesAsync.hasError) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'Failed to load laundry: ${laundriesAsync.error ?? servicesAsync.error}',
+          ),
+        ),
+      );
+    }
+
+    final laundries = laundriesAsync.value ?? [];
+    final services = servicesAsync.value ?? [];
+    if (laundries.isEmpty) {
+      return const Scaffold(
+        body: Center(child: Text('No laundries found')),
+      );
+    }
     final laundry = laundries.firstWhere(
       (item) => item.id == laundryId,
       orElse: () => laundries.first,
@@ -135,9 +157,9 @@ class LaundryDetailsScreen extends ConsumerWidget {
                     Icons.chat_outlined,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     // Create a conversation with this merchant and navigate to chat
-                    ref.read(chatProvider.notifier).createConversation(laundry);
+                    await ref.read(chatProvider.notifier).createConversation(laundry);
                     context.push('/chat');
                   },
                   tooltip: context.l10n.t('Chat with Merchant'),
