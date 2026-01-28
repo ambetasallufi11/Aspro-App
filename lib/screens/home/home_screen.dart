@@ -54,22 +54,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text('Nearby Laundries'),
-        backgroundColor: Colors.white.withOpacity(0.9),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.receipt_long, color: primaryColor),
-            onPressed: () => context.push('/orders'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(64),
+        child: AppBar(
+          title: const Text('Nearby Laundries'),
+          centerTitle: true,
+          toolbarHeight: 64,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          titleTextStyle: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.4,
+            color: const Color(0xFF1F2A37),
           ),
-          IconButton(
-            icon: Icon(Icons.person_outline, color: primaryColor),
-            onPressed: () => context.push('/profile'),
+          actions: [
+            _HeaderActionButton(
+              icon: Icons.receipt_long,
+              onPressed: () => context.push('/orders'),
+              color: primaryColor,
+            ),
+            _HeaderActionButton(
+              icon: Icons.person_outline,
+              onPressed: () => context.push('/profile'),
+              color: primaryColor,
+            ),
+            const SizedBox(width: 6),
+          ],
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(20),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.95),
+                      Colors.white.withOpacity(0.8),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withOpacity(0.7),
+                      width: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-        ],
+        ),
       ),
       body: Stack(
         children: [
@@ -213,70 +260,78 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                     width: 1,
                   ),
                 ),
-                child: Column(
-                  children: [
-                    // Handle bar
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 8),
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              primaryColor.withOpacity(0.3),
-                              primaryColor.withOpacity(0.5),
-                            ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                    
-                    // Title with gradient underline
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: CustomScrollView(
+                  controller: scrollController,
+                  slivers: [
+                    SliverToBoxAdapter(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Top picks near you',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.5,
+                          // Handle bar
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12, bottom: 8),
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    primaryColor.withOpacity(0.3),
+                                    primaryColor.withOpacity(0.5),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Container(
-                            height: 2,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              gradient: AppTheme.primaryGradient,
-                              borderRadius: BorderRadius.circular(2),
+
+                          // Title with gradient underline
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Top picks near you',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                  height: 2,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                    gradient: AppTheme.primaryGradient,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    
+
                     // Laundry listings
-                    Expanded(
-                      child: ListView.builder(
-                        controller: scrollController,
-                        padding: const EdgeInsets.all(20),
-                        itemCount: laundries.length,
-                        itemBuilder: (context, index) {
-                          final laundry = laundries[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: LaundryCard(
-                              laundry: laundry,
-                              onTap: () => context.push('/laundry?id=${laundry.id}'),
-                            ),
-                          );
-                        },
+                    SliverPadding(
+                      padding: const EdgeInsets.all(20),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final laundry = laundries[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: LaundryCard(
+                                laundry: laundry,
+                                onTap: () => context.push('/laundry?id=${laundry.id}'),
+                              ),
+                            );
+                          },
+                          childCount: laundries.length,
+                        ),
                       ),
                     ),
                   ],
@@ -326,6 +381,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderActionButton extends StatelessWidget {
+  const _HeaderActionButton({
+    required this.icon,
+    required this.onPressed,
+    required this.color,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.7),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(icon, color: color, size: 22),
           ),
         ),
       ),
