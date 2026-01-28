@@ -10,6 +10,7 @@ class ChatConversation {
   final List<ChatMessage> messages;
   final DateTime lastUpdated;
   final bool hasUnreadMessages;
+  final bool isSupport;
 
   const ChatConversation({
     required this.id,
@@ -20,6 +21,7 @@ class ChatConversation {
     required this.messages,
     required this.lastUpdated,
     this.hasUnreadMessages = false,
+    this.isSupport = false,
   });
 
   ChatConversation copyWith({
@@ -31,6 +33,7 @@ class ChatConversation {
     List<ChatMessage>? messages,
     DateTime? lastUpdated,
     bool? hasUnreadMessages,
+    bool? isSupport,
   }) {
     return ChatConversation(
       id: id ?? this.id,
@@ -41,6 +44,7 @@ class ChatConversation {
       messages: messages ?? this.messages,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       hasUnreadMessages: hasUnreadMessages ?? this.hasUnreadMessages,
+      isSupport: isSupport ?? this.isSupport,
     );
   }
 
@@ -77,6 +81,7 @@ class ChatConversation {
       merchantImageUrl: laundry.imageUrl,
       messages: [],
       lastUpdated: DateTime.now(),
+      isSupport: false,
     );
   }
 }

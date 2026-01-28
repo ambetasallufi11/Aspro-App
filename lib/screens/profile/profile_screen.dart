@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/mock_providers.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/chat_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -111,7 +112,11 @@ class ProfileScreen extends ConsumerWidget {
               leading: const Icon(Icons.help_outline),
               title: Text(context.l10n.t('Help & support')),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
+              onTap: () {
+                // Create support conversation and navigate to chat
+                ref.read(chatProvider.notifier).createSupportConversation();
+                context.push('/chat');
+              },
             ),
           ),
           const SizedBox(height: 24),

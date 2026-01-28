@@ -7,10 +7,12 @@ import '../../../providers/chat_provider.dart';
 
 class SpecialRequestDialog extends ConsumerStatefulWidget {
   final Function(String) onRequestSelected;
+  final bool isSupport;
 
   const SpecialRequestDialog({
     super.key,
     required this.onRequestSelected,
+    this.isSupport = false,
   });
 
   @override
@@ -42,8 +44,15 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final templates = ref.watch(specialRequestTemplatesProvider);
+    // Use different templates based on whether this is a support chat or merchant chat
+    final templates = widget.isSupport 
+        ? ref.watch(Provider((ref) => ref.read(chatProvider.notifier).getSupportRequestTemplates()))
+        : ref.watch(specialRequestTemplatesProvider);
     final theme = Theme.of(context);
+    
+    final dialogTitle = widget.isSupport 
+        ? context.l10n.t('Support Requests')
+        : context.l10n.t('Special Requests');
     
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -56,7 +65,7 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              context.l10n.t('Special Requests'),
+              dialogTitle,
               style: theme.textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
@@ -130,7 +139,9 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
                         _isCustomRequest = true;
                       });
                     },
-                    child: Text(context.l10n.t('Create Custom Request')),
+                    child: Text(widget.isSupport 
+                        ? context.l10n.t('Create Custom Question')
+                        : context.l10n.t('Create Custom Request')),
                   ),
                 ],
               ),

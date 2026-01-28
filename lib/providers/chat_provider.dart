@@ -71,6 +71,30 @@ class ChatNotifier extends Notifier<ChatState> {
       state = state.copyWith(activeConversation: existingConversation);
     }
   }
+  
+  // Create or access the support conversation
+  void createSupportConversation() {
+    final userId = MockChatData.currentUserId;
+    final supportBotId = MockChatData.supportBotId;
+    
+    // First check if a support conversation already exists
+    final existingConversation = state.conversations.firstWhere(
+      (conv) => conv.isSupport && conv.merchantId == supportBotId && conv.userId == userId,
+      orElse: () => MockChatData.supportConversation,
+    );
+
+    if (!state.conversations.any((conv) => conv.id == existingConversation.id)) {
+      // If the support conversation doesn't exist in our list, add it
+      final updatedConversations = [...state.conversations, existingConversation];
+      state = state.copyWith(
+        conversations: updatedConversations,
+        activeConversation: existingConversation,
+      );
+    } else {
+      // If it already exists, just set it as active
+      state = state.copyWith(activeConversation: existingConversation);
+    }
+  }
 
   // Send a text message
   void sendTextMessage(String content) {
@@ -170,20 +194,26 @@ class ChatNotifier extends Notifier<ChatState> {
   // Simulate merchant response (for demo purposes)
   void _simulateMerchantResponse(ChatMessage userMessage) {
     if (state.activeConversation == null) return;
-
+    
     String responseContent;
     MessageType responseType = MessageType.text;
-
-    switch (userMessage.type) {
-      case MessageType.text:
-        responseContent = 'Thanks for your message! We\'ll get back to you shortly.';
-        break;
-      case MessageType.image:
-        responseContent = 'Thanks for sharing the image. We\'ll take a look at it.';
-        break;
-      case MessageType.specialRequest:
-        responseContent = 'We\'ve noted your special request: "${userMessage.content}". We\'ll make sure to follow these instructions.';
-        break;
+    
+    // If this is a support conversation, use different responses
+    if (state.activeConversation!.isSupport) {
+      responseContent = _generateSupportResponse(userMessage.content);
+    } else {
+      // Regular merchant responses
+      switch (userMessage.type) {
+        case MessageType.text:
+          responseContent = 'Thanks for your message! We\'ll get back to you shortly.';
+          break;
+        case MessageType.image:
+          responseContent = 'Thanks for sharing the image. We\'ll take a look at it.';
+          break;
+        case MessageType.specialRequest:
+          responseContent = 'We\'ve noted your special request: "${userMessage.content}". We\'ll make sure to follow these instructions.';
+          break;
+      }
     }
 
     final responseMessage = ChatMessage(
@@ -234,6 +264,36 @@ class ChatNotifier extends Notifier<ChatState> {
   // Get special request templates
   List<String> getSpecialRequestTemplates() {
     return MockChatData.specialRequestTemplates;
+  }
+  
+  // Get support request templates
+  List<String> getSupportRequestTemplates() {
+    return MockChatData.supportRequestTemplates;
+  }
+  
+  // Generate automated support response based on message content
+  String _generateSupportResponse(String messageContent) {
+    final lowerCaseMessage = messageContent.toLowerCase();
+    
+    // Check if the message contains any of our keywords
+    if (lowerCaseMessage.contains('order') || lowerCaseMessage.contains('#')) {
+      return MockChatData.supportResponses['order']!;
+    } else if (lowerCaseMessage.contains('payment') || lowerCaseMessage.contains('pay') || 
+               lowerCaseMessage.contains('wallet') || lowerCaseMessage.contains('money')) {
+      return MockChatData.supportResponses['payment']!;
+    } else if (lowerCaseMessage.contains('delivery') || lowerCaseMessage.contains('time') ||
+               lowerCaseMessage.contains('reschedule')) {
+      return MockChatData.supportResponses['delivery']!;
+    } else if (lowerCaseMessage.contains('cancel')) {
+      return MockChatData.supportResponses['cancel']!;
+    } else if (lowerCaseMessage.contains('track') || lowerCaseMessage.contains('where')) {
+      return MockChatData.supportResponses['track']!;
+    } else if (lowerCaseMessage.contains('help')) {
+      return MockChatData.supportResponses['help']!;
+    }
+    
+    // Default response if no keywords match
+    return MockChatData.supportResponses['default']!;
   }
 }
 

@@ -71,6 +71,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _showSpecialRequestDialog() {
+    final activeConversation = ref.read(chatProvider).activeConversation;
+    final isSupport = activeConversation?.isSupport ?? false;
+    
     showDialog(
       context: context,
       builder: (context) => SpecialRequestDialog(
@@ -82,6 +85,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             _scrollToBottom();
           });
         },
+        isSupport: isSupport,
       ),
     );
   }
@@ -97,6 +101,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ? Text(activeConversation.merchantName)
             : Text(context.l10n.t('Chat')),
         elevation: 1,
+        backgroundColor: activeConversation?.isSupport ?? false
+            ? Theme.of(context).colorScheme.primary 
+            : null,
+        foregroundColor: activeConversation?.isSupport ?? false
+            ? Theme.of(context).colorScheme.onPrimary
+            : null,
+        leading: Container(
+          margin: const EdgeInsets.only(left: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.3),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+            tooltip: 'Back',
+          ),
+        ),
       ),
       body: activeConversation == null
           ? Center(

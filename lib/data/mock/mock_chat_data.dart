@@ -4,6 +4,33 @@ import 'mock_data.dart';
 
 class MockChatData {
   static final String currentUserId = 'user_1';
+  static final String supportBotId = 'support_bot';
+
+  // Support conversation messages
+  static final List<ChatMessage> _supportBotMessages = [
+    ChatMessage(
+      id: 'support_msg_1',
+      senderId: supportBotId,
+      receiverId: currentUserId,
+      content: 'Welcome to Aspro Support! How can we help you today?',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
+      isFromUser: false,
+      type: MessageType.text,
+    ),
+  ];
+
+  // Support bot conversation (not included in default conversations list)
+  static final ChatConversation supportConversation = ChatConversation(
+    id: 'conv_support_user_1',
+    userId: currentUserId,
+    merchantId: supportBotId,
+    merchantName: 'Aspro Support',
+    merchantImageUrl: 'assets/aspro-logo.png',
+    messages: _supportBotMessages,
+    lastUpdated: DateTime.now(),
+    hasUnreadMessages: false,
+    isSupport: true,
+  );
 
   static final List<ChatConversation> conversations = [
     ChatConversation(
@@ -297,4 +324,27 @@ class MockChatData {
     'Remove stains if possible',
     'Fold items instead of hanging',
   ];
+  
+  // Support request templates
+  static final List<String> supportRequestTemplates = [
+    'I need help with my order',
+    'I want to change my delivery time',
+    'I have an issue with payment',
+    'How do I track my order?',
+    'I need to cancel my order',
+    'My items were not picked up',
+    'I want to report a problem',
+    'How do I add special instructions?'
+  ];
+  
+  // Automated support responses
+  static Map<String, String> supportResponses = {
+    'order': 'To get help with your order, please provide your order ID. You can find it in the Orders section of the app.',
+    'payment': 'For payment issues, please check your wallet balance and payment methods in the Payment section. If the problem persists, we can help troubleshoot.',
+    'delivery': 'To change delivery details, go to your active order and select "Edit Delivery". If it\'s too late to edit, we can help coordinate with the merchant.',
+    'cancel': 'To cancel an order, go to the Orders screen and select the order you want to cancel. Note that cancellation fees may apply if the order is already in progress.',
+    'track': 'You can track your order in real-time from the Orders screen. Simply select the order you want to track and you\'ll see its current status.',
+    'help': 'I\'m Aspro Support! I can help with order issues, delivery changes, payment problems, and general questions about our service.',
+    'default': 'Thank you for contacting Aspro Support. A support agent will review your message and get back to you shortly. In the meantime, please check our FAQ section for immediate assistance.'
+  };
 }
