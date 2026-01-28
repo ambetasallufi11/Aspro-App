@@ -45,8 +45,8 @@ class EnhancedButton extends StatelessWidget {
     Widget _buildFilledButton(Color primaryColor, EdgeInsetsGeometry buttonPadding, double buttonElevation) {
         if (useGradient) {
             return isFullWidth
-                ? SizedBox(width: double.infinity, child: _buildGradientButton(buttonPadding, buttonElevation))
-                : _buildGradientButton(buttonPadding, buttonElevation);
+                ? SizedBox(width: double.infinity, child: _buildGradientButton(primaryColor, buttonPadding, buttonElevation))
+                : _buildGradientButton(primaryColor, buttonPadding, buttonElevation);
         } else {
             final buttonStyle = ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,
@@ -103,11 +103,11 @@ class EnhancedButton extends StatelessWidget {
             );
     }
     
-    Widget _buildGradientButton(EdgeInsetsGeometry buttonPadding, double buttonElevation) {
+    Widget _buildGradientButton(Color primaryColor, EdgeInsetsGeometry buttonPadding, double buttonElevation) {
         return Material(
             color: Colors.transparent,
             elevation: buttonElevation,
-            shadowColor: Colors.blue.withOpacity(0.4),
+            shadowColor: primaryColor.withOpacity(0.4),
             borderRadius: BorderRadius.circular(20),
             child: InkWell(
                 onTap: onPressed,
@@ -119,7 +119,7 @@ class EnhancedButton extends StatelessWidget {
                         boxShadow: buttonElevation > 0 
                             ? [
                                 BoxShadow(
-                                    color: Colors.blue.withOpacity(0.2),
+                                    color: primaryColor.withOpacity(0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                 ),

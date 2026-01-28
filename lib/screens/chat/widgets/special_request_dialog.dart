@@ -44,15 +44,10 @@ class _SpecialRequestDialogState extends ConsumerState<SpecialRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // Use different templates based on whether this is a support chat or merchant chat
-    final templates = widget.isSupport 
-        ? ref.watch(Provider((ref) => ref.read(chatProvider.notifier).getSupportRequestTemplates()))
-        : ref.watch(specialRequestTemplatesProvider);
+    final templates = ref.watch(specialRequestTemplatesProvider);
     final theme = Theme.of(context);
     
-    final dialogTitle = widget.isSupport 
-        ? context.l10n.t('Support Requests')
-        : context.l10n.t('Special Requests');
+    final dialogTitle = context.l10n.t('Special Requests');
     
     return Dialog(
       shape: RoundedRectangleBorder(

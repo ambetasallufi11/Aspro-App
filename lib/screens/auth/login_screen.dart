@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../providers/mock_providers.dart';
+import '../../providers/api_providers.dart';
 import '../../widgets/primary_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -30,7 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
 
@@ -39,13 +39,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    final isValid =
-        ref.read(authProvider.notifier).login(email: email, password: password);
+    final isValid = await ref
+        .read(authProvider.notifier)
+        .login(email: email, password: password);
 
     if (isValid) {
       context.go('/home');
     } else {
-      _showMessage(context.l10n.t('Wrong email or password. Please try again.'));
+      final error = ref.read(authProvider).error;
+      _showMessage(error ?? context.l10n.t('Wrong email or password. Please try again.'));
     }
   }
 

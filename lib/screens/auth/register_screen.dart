@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../providers/mock_providers.dart';
+import '../../providers/api_providers.dart';
 import '../../widgets/primary_button.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -32,7 +32,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 
-  void _handleRegister() {
+  Future<void> _handleRegister() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
@@ -42,7 +42,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    final created = ref.read(authProvider.notifier).registerUser(
+    final created = await ref.read(authProvider.notifier).register(
           name: name,
           email: email,
           password: password,
@@ -52,7 +52,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _showMessage(context.l10n.t('Account created. You are now signed in.'));
       context.go('/home');
     } else {
-      _showMessage(context.l10n.t('Email already exists. Please sign in.'));
+      final error = ref.read(authProvider).error;
+      _showMessage(error ?? context.l10n.t('Email already exists. Please sign in.'));
     }
   }
 

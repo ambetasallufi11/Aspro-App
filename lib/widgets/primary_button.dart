@@ -26,15 +26,15 @@ class PrimaryButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     
     if (isOutlined) {
-      return _buildOutlinedButton(colorScheme);
+      return _buildOutlinedButton(context, colorScheme);
     } else if (useGradient) {
-      return _buildGradientButton(colorScheme);
+      return _buildGradientButton(context, colorScheme);
     } else {
-      return _buildFilledButton(colorScheme);
+      return _buildFilledButton(context, colorScheme);
     }
   }
   
-  Widget _buildFilledButton(ColorScheme colorScheme) {
+  Widget _buildFilledButton(BuildContext context, ColorScheme colorScheme) {
     final style = FilledButton.styleFrom(
       backgroundColor: colorScheme.primary,
       foregroundColor: Colors.white,
@@ -50,12 +50,12 @@ class PrimaryButton extends StatelessWidget {
       child: FilledButton(
         onPressed: isLoading ? null : onPressed,
         style: style,
-        child: _buildButtonContent(false),
+        child: _buildButtonContent(context, false),
       ),
     );
   }
   
-  Widget _buildOutlinedButton(ColorScheme colorScheme) {
+  Widget _buildOutlinedButton(BuildContext context, ColorScheme colorScheme) {
     final style = OutlinedButton.styleFrom(
       foregroundColor: colorScheme.primary,
       side: BorderSide(color: colorScheme.primary, width: 1.5),
@@ -69,12 +69,12 @@ class PrimaryButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: isLoading ? null : onPressed,
         style: style,
-        child: _buildButtonContent(false),
+        child: _buildButtonContent(context, false),
       ),
     );
   }
   
-  Widget _buildGradientButton(ColorScheme colorScheme) {
+  Widget _buildGradientButton(BuildContext context, ColorScheme colorScheme) {
     return SizedBox(
       width: double.infinity,
       height: height,
@@ -100,7 +100,7 @@ class PrimaryButton extends StatelessWidget {
             ),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              child: _buildButtonContent(true),
+              child: _buildButtonContent(context, true),
             ),
           ),
         ),
@@ -108,7 +108,7 @@ class PrimaryButton extends StatelessWidget {
     );
   }
   
-  Widget _buildButtonContent(bool isGradient) {
+  Widget _buildButtonContent(BuildContext context, bool isGradient) {
     if (isLoading) {
       return Center(
         child: SizedBox(
@@ -117,7 +117,7 @@ class PrimaryButton extends StatelessWidget {
           child: CircularProgressIndicator(
             strokeWidth: 2.5,
             valueColor: AlwaysStoppedAnimation<Color>(
-              isGradient || !isOutlined ? Colors.white : Colors.blue,
+              isGradient || !isOutlined ? Colors.white : Theme.of(context).colorScheme.primary,
             ),
           ),
         ),

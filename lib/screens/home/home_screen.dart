@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../providers/mock_providers.dart';
+import '../../providers/api_providers.dart';
 import '../../widgets/laundry_card.dart';
 import '../../theme/app_theme.dart';
 
@@ -49,9 +49,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final laundries = ref.watch(laundriesProvider);
+    final laundriesAsync = ref.watch(laundriesProvider);
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
+
+    if (laundriesAsync.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (laundriesAsync.hasError) {
+      return Scaffold(
+        body: Center(
+          child: Text('Failed to load laundries: ${laundriesAsync.error}'),
+        ),
+      );
+    }
+
+    final laundries = laundriesAsync.value ?? [];
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -71,6 +87,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
             color: const Color(0xFF1F2A37),
           ),
           actions: [
+            _HeaderActionButton(
+              icon: Icons.discount_outlined,
+              onPressed: () => context.push('/coupons'),
+              color: primaryColor,
+            ),
             _HeaderActionButton(
               icon: Icons.chat_outlined,
               onPressed: () => context.push('/conversations'),
