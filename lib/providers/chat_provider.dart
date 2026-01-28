@@ -46,19 +46,28 @@ class ChatNotifier extends Notifier<ChatState> {
     final api = ref.read(apiClientProvider);
     final rooms = await api.chatRooms();
     final conversations = rooms.map((room) {
+      final isSupport = room['is_support'] as bool? ?? false;
+      final merchantId = room['merchant_id'] != null
+          ? (room['merchant_id'] as int).toString()
+          : 'support';
       return ChatConversation(
         id: (room['id'] as int).toString(),
         userId: (room['user_id'] as int).toString(),
-        merchantId: (room['merchant_id'] as int).toString(),
-        merchantName: room['merchant_name'] as String? ?? 'Merchant',
+        merchantId: merchantId,
+        merchantName: isSupport
+            ? 'Aspro Support'
+            : room['merchant_name'] as String? ?? 'Merchant',
         merchantImageUrl: room['merchant_image_url'] as String?,
         messages: const [],
         lastUpdated: DateTime.now(),
-        isSupport: false,
+        isSupport: isSupport,
       );
     }).toList();
 
-    state = state.copyWith(conversations: conversations);
+    final filtered = auth.currentUser?.role == 'admin'
+        ? conversations.where((c) => c.isSupport).toList()
+        : conversations;
+    state = state.copyWith(conversations: filtered);
   }
 
   Future<void> setActiveConversation(String conversationId) async {
@@ -98,9 +107,29 @@ class ChatNotifier extends Notifier<ChatState> {
       merchantId: (room['merchant_id'] as int).toString(),
       merchantName: merchant.name,
       merchantImageUrl: merchant.imageUrl,
+        messages: const [],
+        lastUpdated: DateTime.now(),
+        isSupport: false,
+    );
+
+    state = state.copyWith(
+      conversations: [...state.conversations, conversation],
+      activeConversation: conversation,
+    );
+  }
+
+  Future<void> createSupportConversation() async {
+    final api = ref.read(apiClientProvider);
+    final room = await api.createSupportRoom();
+    final conversation = ChatConversation(
+      id: (room['id'] as int).toString(),
+      userId: (room['user_id'] as int).toString(),
+      merchantId: 'support',
+      merchantName: 'Aspro Support',
+      merchantImageUrl: null,
       messages: const [],
       lastUpdated: DateTime.now(),
-      isSupport: false,
+      isSupport: true,
     );
 
     state = state.copyWith(
@@ -179,7 +208,16 @@ class ChatNotifier extends Notifier<ChatState> {
     state = state.copyWith(conversations: updatedConversations);
   }
 
-  List<String> getSpecialRequestTemplates() {
+  List<String> getSpecialRequestTemplates({required bool isSupport}) {
+    if (isSupport) {
+      return [
+        'Where is my order?',
+        'I want to change pickup time',
+        'I want to change delivery address',
+        'Payment issue / refund request',
+        'I need to cancel my order',
+      ];
+    }
     return [
       'Wash on cold and low spin',
       'Use hypoallergenic detergent',
@@ -200,6 +238,9 @@ final conversationListProvider = Provider<List<ChatConversation>>((ref) {
   return chatState.conversations;
 });
 
-final specialRequestTemplatesProvider = Provider<List<String>>((ref) {
-  return ref.watch(chatProvider.notifier).getSpecialRequestTemplates();
+final specialRequestTemplatesProvider =
+    Provider.family<List<String>, bool>((ref, isSupport) {
+  return ref
+      .watch(chatProvider.notifier)
+      .getSpecialRequestTemplates(isSupport: isSupport);
 });

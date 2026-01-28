@@ -112,9 +112,8 @@ class ProfileScreen extends ConsumerWidget {
               leading: const Icon(Icons.help_outline),
               title: Text(context.l10n.t('Help & support')),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                // Create support conversation and navigate to chat
-                // Support chat not yet wired; use conversations list instead.
+              onTap: () async {
+                await ref.read(chatProvider.notifier).createSupportConversation();
                 context.push('/chat');
               },
             ),

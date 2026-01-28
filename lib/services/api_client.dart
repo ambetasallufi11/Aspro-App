@@ -138,4 +138,15 @@ class ApiClient {
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
+
+  Future<Map<String, dynamic>> createSupportRoom() async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/chat/support'),
+      headers: _headers,
+    );
+    if (res.statusCode >= 400) {
+      throw Exception(res.body);
+    }
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
 }
